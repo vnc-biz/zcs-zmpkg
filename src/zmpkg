@@ -45,15 +45,18 @@ zmpkg_help() {
 }
 
 zmpkg_deploy_zimlets() {
-	for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip"` ; do
-		echo "Deploying zimlet: $zimlet"
-		echo $ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && rm -f "$zimlet"
-	done
+	if [ -d "$ZIMBRA_ROOT/zimlets-install" ]; then
+		for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
+			echo "Deploying zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && rm -f "$zimlet"
+		done
+		find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
+	fi
 }
 
 zmpkg_install() {
 	[ "$1" ] || zmpkg_help
-	dpkg_call -i "$*" && deploy_zimlets
+	dpkg_call -i "$*" && zmpkg_deploy_zimlets
 }
 
 zmpkg_list() {

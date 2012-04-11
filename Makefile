@@ -14,7 +14,7 @@ build:	$(DEBFILE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
 	@cp $(DEBFILE) $(DISTDIR)
 	@cp README $(DISTDIR)
-	(cd $(DISTPREFIX) && tar -czf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION))
+	@(cd $(DISTPREFIX) && tar -czf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION))
 
 _image:	$(DEBDIR)/control
 	@mkdir -p image/bin
