@@ -1,0 +1,8 @@
+Simple ZCS package mangement system
+====================================
+
+initial deployment:
+
+    * make sure dpkg is installed and available in $PATH
+    * run install.sh script
+

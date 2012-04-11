@@ -1,0 +1,7 @@
+Package: @PACKAGE@
+Version: @VERSION@
+Section: @SECTION@
+Priority: @PRIORITY@
+Architecture: @ARCHITECTURE@
+Maintainer: @MAINTAINER@
+Description: @DESCRIPTION@

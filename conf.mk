@@ -1,0 +1,14 @@
+VERSION=1.0.1
+PACKAGE=zcs-zmpkg
+MAINTAINER=Enrico Weigelt <enrico.weigelt@vnc.biz>
+SECTION=base
+ARCHITECTURE=All
+PRIORITY=optional
+DESCRIPTION=Zimbra package management system
+DISTPREFIX=$(TOPDIR)/dist
+DISTDIR=$(DISTPREFIX)/$(PACKAGE)-$(VERSION)
+DISTFILE=$(DISTPREFIX)/$(PACKAGE)-$(VERSION).tar.gz
+JAVA?=java
+JAR?=jar
+JAVAC?=javac
+IMAGE_ROOT=$(TOPDIR)/image
