@@ -50,7 +50,16 @@ zmpkg_deploy_zimlets() {
 			echo "Deploying zimlet: $zimlet"
 			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && rm -f "$zimlet"
 		done
+		for script in `find $ZIMBRA_ROOT/zimlets-scripts -name "post-install.sh" 2>/dev/null` ; do
+			echo "Running post-install script: $script"
+			(
+				DIRNAME=`dirname "$script"`
+				SCRIPTNAME=`basename "$script"`
+				cd $DIRNAME && ./$SCRIPTNAME && rm -f $SCRIPTNAME
+			)
+		done
 		find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
+		find $ZIMBRA_ROOT/zimlets-scripts -type d -exec "rmdir" "{}" ";" 2>/dev/null
 	fi
 }
 
