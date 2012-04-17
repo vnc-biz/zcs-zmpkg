@@ -62,11 +62,12 @@ zmpkg_deploy_zimlets() {
 		find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
 		find $ZIMBRA_ROOT/zimlets-scripts -type d -exec "rmdir" "{}" ";" 2>/dev/null
 	fi
+	return 0
 }
 
 zmpkg_install() {
 	[ "$1" ] || zmpkg_help
-	dpkg_call -i "$*" && zmpkg_deploy_zimlets
+	dpkg_call -i "$@" && zmpkg_deploy_zimlets
 }
 
 zmpkg_list() {
