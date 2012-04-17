@@ -37,10 +37,11 @@ dpkg_call() {
 }
 
 zmpkg_help() {
-	echo "$ME install <deb-file-name>      install a package file"
-	echo "$ME remove <package-name>        remove a package"
-	echo "$ME list                         list installed packages"
-	echo "$ME redeploy                     deploy zimlets that haven't been deployed yet (due interruption)"
+	echo "$ME install <deb-file-name>         install a package file"
+	echo "$ME remove <package-name>           remove a package"
+	echo "$ME list                            list installed packages"
+	echo "$ME redeploy                        deploy zimlets that haven't been deployed yet (due interruption)"
+	echo "$ME check-installed <package-name>  check whether package with given name is installed (for scripting use)"
 	exit 1
 }
 
@@ -69,7 +70,17 @@ zmpkg_install() {
 }
 
 zmpkg_list() {
-	dpkg_call -l
+	dpkg_call -l "$@"
+}
+
+zmpkg_check_installed() {
+	if dpkg_call -s "$1" 2>/dev/null >/dev/null; then
+		exit 0
+	elif dpkg_call -s "$1:All" 2>/dev/null >/dev/null; then
+		exit 0
+	else
+		exit 1
+	fi
 }
 
 zmpkg_remove() {
@@ -92,6 +103,10 @@ case "$1" in
 	redeploy)
 		shift
 		zmpkg_deploy_zimlets "$@"
+	;;
+	check-installed)
+		shift
+		zmpkg_check_installed "$@"
 	;;
 	*)
 		zmpkg_help
