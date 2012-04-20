@@ -1,4 +1,4 @@
-VERSION=1.0.1
+VERSION=1.0.2
 PACKAGE=zcs-zmpkg
 MAINTAINER=Enrico Weigelt <enrico.weigelt@vnc.biz>
 SECTION=base
@@ -12,5 +12,10 @@ JAVA?=java
 JAR?=jar
 JAVAC?=javac
 IMAGE_ROOT=$(TOPDIR)/image
+
+ifeq ($(REDMINE_UPLOAD_URL),)
 REDMINE_UPLOAD_URL=https://redmine.vnc.biz/redmine/
+endif
+ifeq ($(REDMINE_UPLOAD_PROJECT),)
 REDMINE_UPLOAD_PROJECT=zcs-zmpkg
+endif
