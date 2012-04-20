@@ -7,45 +7,51 @@ err() {
 	exit 1
 }
 
-## only want to run as unprivileged user
-[ `whoami` == 'root' ] && err "dont wanna run as root"
-
-DPKG_ROOT=$HOME
+zmpkg_help() {
+	echo "$ME <zimbra-user> <zimbra-root>" >&2
+	exit 1
+}
 
 dpkg_init() {
 	mkdir -p \
-		$DPKG_ROOT/var/lib/dpkg			\
-		$DPKG_ROOT/var/lib/dpkg/updates		\
-		$DPKG_ROOT/var/lib/dpkg/triggers	\
-		$DPKG_ROOT/var/lib/dpkg/info		\
-		$DPKG_ROOT/var/log			\
-		$DPKG_ROOT/.tmp				\
+		$ZIMBRA_HOME/var/lib/dpkg		\
+		$ZIMBRA_HOME/var/lib/dpkg/updates	\
+		$ZIMBRA_HOME/var/lib/dpkg/triggers	\
+		$ZIMBRA_HOME/var/lib/dpkg/info		\
+		$ZIMBRA_HOME/var/log			\
+		$ZIMBRA_HOME/.tmp			\
 
 	touch	\
-		$DPKG_ROOT/var/lib/dpkg/status	\
-		$DPKG_ROOT/var/lib/dpkg/available
+		$ZIMBRA_HOME/var/lib/dpkg/status	\
+		$ZIMBRA_HOME/var/lib/dpkg/available
 
-	for i in start-stop-daemon ldconfig ; do
-		(echo "#!/bin/bash" ; echo "exit 0" ) > $DPKG_ROOT/.tmp/$i
-		chmod +x $DPKG_ROOT/.tmp/$i
-	done
+	chown -R $ZIMBRA_USER	$ZIMBRA_HOME/var/ $ZIMBRA_HOME/bin
+
+	find /opt/zimbra -type d | xargs chown $ZIMBRA_USER
 }
 
 dpkg_call() {
 	dpkg_init
-	PATH="$DPKG_ROOT/.tmp:$PATH" dpkg --root=$DPKG_ROOT --log=$DPKG_ROOT/var/log/dpkg.log "$@"
+	su $ZIMBRA_USERNAME -- fakeroot dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log "$@"
 }
 
-zmpkg_help() {
-	echo "$ME install <deb-file-name>"
-	echo "$ME remove <package-name>"
-	echo "$ME list"
-	exit 1
-}
+## only want to run as unprivileged user
+[ `whoami` != 'root' ] && err "I wanna run as root"
 
-zmpkg_install() {
-	[ "$1" ] || zmpkg_help
-	dpkg_call -i "$*"
-}
+if [ ! "$2" ]; then
+	zmpkg_help
+fi
 
-zmpkg_install @DEBFILE@
+ZIMBRA_USER="$1"
+ZIMBRA_HOME="$2"
+ZIMBRA_USERNAME=`echo "$ZIMBRA_USER" | sed -e 's/:.*//'`
+
+if ! fakeroot /bin/true ; then
+	err "$0: fakeroot needs to be installed"
+fi
+
+if ! dpkg --help >/dev/null ; then
+	err "$0: dpkg needs to be installed"
+fi
+
+dpkg_call -i zcs-zmpkg_1.0.1_All.deb
