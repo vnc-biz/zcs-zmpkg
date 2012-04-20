@@ -14,26 +14,22 @@ ZIMBRA_ROOT=$HOME
 
 dpkg_init() {
 	mkdir -p \
-		$ZIMBRA_ROOT/var/lib/dpkg			\
-		$ZIMBRA_ROOT/var/lib/dpkg/updates		\
+		$ZIMBRA_ROOT/var/lib/dpkg		\
+		$ZIMBRA_ROOT/var/lib/dpkg/updates	\
 		$ZIMBRA_ROOT/var/lib/dpkg/triggers	\
 		$ZIMBRA_ROOT/var/lib/dpkg/info		\
 		$ZIMBRA_ROOT/var/log			\
-		$ZIMBRA_ROOT/.tmp				\
+		$ZIMBRA_ROOT/.tmp			|| err "permission problem. cannot access package database"
 
 	touch	\
 		$ZIMBRA_ROOT/var/lib/dpkg/status	\
-		$ZIMBRA_ROOT/var/lib/dpkg/available
-
-	for i in start-stop-daemon ldconfig ; do
-		(echo "#!/bin/bash" ; echo "exit 0" ) > $ZIMBRA_ROOT/.tmp/$i
-		chmod +x $ZIMBRA_ROOT/.tmp/$i
-	done
+		$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 }
 
 dpkg_call() {
 	dpkg_init
-	PATH="$ZIMBRA_ROOT/.tmp:$PATH" dpkg --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+	export PATH="$PATH:/sbin:/usr/sbin"
+	fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
 }
 
 zmpkg_help() {
