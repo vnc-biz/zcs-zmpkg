@@ -7,6 +7,10 @@ err() {
 	exit 1
 }
 
+log() {
+	echo "$*" >&2
+}
+
 ## only want to run as unprivileged user
 [ `whoami` == 'root' ] && err "dont wanna run as root"
 
@@ -41,23 +45,59 @@ zmpkg_help() {
 	exit 1
 }
 
-zmpkg_deploy_zimlets() {
-	if [ -d "$ZIMBRA_ROOT/zimlets-install" ]; then
-		for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
-			echo "Deploying zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && rm -f "$zimlet"
-		done
-		for script in `find $ZIMBRA_ROOT/zimlets-scripts -name "post-install.sh" 2>/dev/null` ; do
-			echo "Running post-install script: $script"
-			(
-				DIRNAME=`dirname "$script"`
-				SCRIPTNAME=`basename "$script"`
-				cd $DIRNAME && ./$SCRIPTNAME && rm -f $SCRIPTNAME
-			)
-		done
-		find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
-		find $ZIMBRA_ROOT/zimlets-scripts -type d -exec "rmdir" "{}" ";" 2>/dev/null
+file_md5() {
+	md5sum "$1" | sed -e 's~ .*~~'
+}
+
+need_to_deploy() {
+	local zimlet="$1"
+	local deployed_md5=`cat "$zimlet.deployed" 2>/dev/null`
+	local install_md5=`file_md5 "$zimlet" 2>/dev/null`
+	if [ "$deployed_md5" != "$install_md5" ]; then
+		return 0
+	else
+		return 1
 	fi
+}
+
+mark_deployed() {
+	file_md5 "$1" > "$1.deployed"
+}
+
+zmpkg_deploy_zimlets() {
+	## deploy or redeploy zimlets
+	for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
+		if need_to_deploy "$zimlet" ; then
+			log "Deploying zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && mark_deployed "$zimlet"
+		else
+			log "Skipping already deployed: $zimlet"
+		fi
+	done
+
+	## undeploy remove zimlets
+	for statfile in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip.deployed" 2>/dev/null` ; do
+		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
+		local zimlet=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
+		if [ ! -f "$archive" ]; then
+			log "Undeploying removed zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmzimletctl undeploy "$zimlet" && rm -f $statfile
+		fi
+	done
+
+	## run post-install scripts
+	for script in `find $ZIMBRA_ROOT/zimlets-scripts -name "post-install.sh" 2>/dev/null` ; do
+		log "Running post-install script: $script"
+		(
+			DIRNAME=`dirname "$script"`
+			SCRIPTNAME=`basename "$script"`
+			cd $DIRNAME && ./$SCRIPTNAME && rm -f $SCRIPTNAME
+		)
+	done
+
+	## removed empty directories
+	find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
+	find $ZIMBRA_ROOT/zimlets-scripts -type d -exec "rmdir" "{}" ";" 2>/dev/null
 	return 0
 }
 
@@ -81,7 +121,13 @@ zmpkg_check_installed() {
 }
 
 zmpkg_remove() {
-	dpkg_call -r "$@"
+	local l=""
+	for i in "$@" ; do
+		l="$list $i $i:All"
+	done
+
+	dpkg_call -r $l
+	zmpkg_deploy_zimlets
 }
 
 case "$1" in
