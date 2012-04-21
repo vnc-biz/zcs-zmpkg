@@ -4,8 +4,6 @@ include $(TOPDIR)/conf.mk
 
 DEBDIR=$(IMAGE_ROOT)/DEBIAN
 DEBFILE=$(PACKAGE)_$(VERSION)_$(ARCHITECTURE).deb
-DISTPREFIX=dist
-DISTDIR=$(DISTPREFIX)/$(PACKAGE)-$(VERSION)
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
 all:	build
@@ -14,7 +12,7 @@ build:	$(DEBFILE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
 	@cp $(DEBFILE) $(DISTDIR)
 	@cp README $(DISTDIR)
-	@(cd $(DISTPREFIX) && tar -czf $(PACKAGE)-$(VERSION).tar.gz $(PACKAGE)-$(VERSION))
+	@(cd $(DISTPREFIX) && tar -czf $(DISTFILENAME) $(PACKAGE)-$(VERSION))
 
 _image:	$(DEBDIR)/control
 	@mkdir -p image/bin
@@ -55,3 +53,10 @@ upload:	all
 		-w $(REDMINE_UPLOAD_PASSWORD)	\
 		-p $(REDMINE_UPLOAD_PROJECT)	\
 		-d "$(DEBFILE)"
+	@upload_file_to_redmine.py		\
+		-f $(DISTFILE)			\
+		-l $(REDMINE_UPLOAD_URL)	\
+		-u $(REDMINE_UPLOAD_USER)	\
+		-w $(REDMINE_UPLOAD_PASSWORD)	\
+		-p $(REDMINE_UPLOAD_PROJECT)	\
+		-d "$(DISTFILENAME)"

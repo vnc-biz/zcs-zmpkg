@@ -1,0 +1,56 @@
+The zmpkg command a command line interface to the VNC-ZCS package management facility.
+
+Under the hood, it is an wrapper for running an dpkg instance inside the ZCS user context, completely independent from the operating system's package management. It handles installation and removal of ZCS packages, including dependency checking.
+
+
+_For later versions it is planned to include repository support for automatic downloading and dependency resolutions, as found in apt-get+friends_
+
+h1. Package deployment
+
+h2. Installing packages
+
+Packages come in the form of *.deb archives, which are installed via:
+
+<pre>
+zmpkg install <deb-file-names>
+</pre>
+
+This call will refuse installation, if dependencies are not met.
+
+After package installation, an post-install routine takes care of deploying new/updated zimlets, sql schemata and run post-install scripts.
+
+h2. Removing packages
+
+<pre>
+zmpkg remove <package-name>
+</pre>
+
+Note: the current zimlet template makefiles create packages with explicit architecture "All", which appears in the canonical package name.
+"zmpkg remove" will try to add the ":All" suffix automatically if required.
+
+h2. listing installed packages
+
+<pre>
+zmpkg list
+</pre>
+
+h1. First time installation / bootstrap
+
+h2. Requirements
+
+* the *dpkg* too must be installed on the target system and available through *$PATH*
+* root access to the host machine
+* tarball of zmpkg bootstrap package
+* ZCS must already be installed (at least zimbra user and it's homedir must exist)
+
+h2. Running the bootstrap
+
+Unpack the zmpkg-*.tar.gz tarball and run the *install.sh* script as *root* with the zimbra-user/group as first and it's homedir as second parameter.
+
+For example:
+
+<pre>
+./install.sh zimbra:zimbra /opt/zimbra
+</pre>
+
+This script will install set up a local package manager instance under the ZCS user and installs the zmpkg command.
