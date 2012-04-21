@@ -49,6 +49,10 @@ file_md5() {
 	md5sum "$1" | sed -e 's~ .*~~'
 }
 
+run_sql() {
+	$ZIMBRA_ROOT/bin/mysql < $1
+}
+
 need_to_deploy() {
 	local zimlet="$1"
 	local deployed_md5=`cat "$zimlet.deployed" 2>/dev/null`
@@ -65,16 +69,6 @@ mark_deployed() {
 }
 
 zmpkg_deploy_zimlets() {
-	## deploy or redeploy zimlets
-	for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
-		if need_to_deploy "$zimlet" ; then
-			log "Deploying zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && mark_deployed "$zimlet"
-		else
-			log "Skipping already deployed: $zimlet"
-		fi
-	done
-
 	## undeploy remove zimlets
 	for statfile in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip.deployed" 2>/dev/null` ; do
 		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
@@ -85,14 +79,28 @@ zmpkg_deploy_zimlets() {
 		fi
 	done
 
+	## run sql scripts
+	for sqlfile in `find $ZIMBRA_ROOT/zimlets-install -name "mailboxd-db-schema.sql" 2>/dev/null` ; do
+		if need_to_deploy $sqlfile ]; then
+			log "Deploying sql file: $sqlfile"
+			run_sql $sqlfile && mark_deployed $sqlfile
+		fi
+	done
+
+	## deploy or redeploy zimlets
+	for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
+		if need_to_deploy "$zimlet" ; then
+			log "Deploying zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && mark_deployed "$zimlet"
+		fi
+	done
+
 	## run post-install scripts
-	for script in `find $ZIMBRA_ROOT/zimlets-scripts -name "post-install.sh" 2>/dev/null` ; do
-		log "Running post-install script: $script"
-		(
-			DIRNAME=`dirname "$script"`
-			SCRIPTNAME=`basename "$script"`
-			cd $DIRNAME && ./$SCRIPTNAME && rm -f $SCRIPTNAME
-		)
+	for scriptfile in `find $ZIMBRA_ROOT/zimlets-install -name "post-install.sh" 2>/dev/null` ; do
+		if need_to_deploy $scriptfile ; then
+			log "Running post-install script: $scriptfile"
+			$scriptfile && mark_deployed $scriptfile
+		fi
 	done
 
 	## removed empty directories
