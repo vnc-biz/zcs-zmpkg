@@ -11,7 +11,7 @@ all:	build
 build:	$(DEBFILE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
 	@cp $(DEBFILE) $(DISTDIR)
-	@cp README $(DISTDIR)
+	@cp README.quick README.textile $(DISTDIR)
 	@(cd $(DISTPREFIX) && tar -czf $(DISTFILENAME) $(PACKAGE)-$(VERSION))
 
 _image:	$(DEBDIR)/control
