@@ -54,3 +54,15 @@ For example:
 </pre>
 
 This script will install set up a local package manager instance under the ZCS user and installs the zmpkg command.
+
+h1. Development system setup
+
+Many packages require certain ZCS core libraries to be present in $HOME/lib/jars. When building under an separate unprivileged user (which is strongly advised), these files have to be symlink'ed (or copied) from an existing ZCS installation.
+
+The call:
+
+<pre>
+zmpkg devel-init /opt/zimbra
+</pre>
+
+will setup these symlinks to an existing ZCS installation in /opt/zimbra.

@@ -42,6 +42,7 @@ zmpkg_help() {
 	echo "$ME list                            list installed packages"
 	echo "$ME redeploy                        deploy zimlets that haven't been deployed yet (due interruption)"
 	echo "$ME check-installed <package-name>  check whether package with given name is installed (for scripting use)"
+	echo "$ME devel-init <zimbra-root>        initial local development environment (using given zimbra installation)"
 	exit 1
 }
 
@@ -138,6 +139,20 @@ zmpkg_remove() {
 	zmpkg_deploy_zimlets
 }
 
+zmpkg_devinit() {
+	if [ ! "$1" ]; then
+		echo "$0 devel-init <zimbra-root>"
+		exit 2
+	fi
+	local ORIGINAL_ZIMBRA_ROOT="$1"
+	local JARDIR=$ZIMBRA_ROOT/lib/jars
+	mkdir -p $JARDIR || err "failed to create $JARDIR"
+	cd $JARDIR || err "failed to chdir to $JARDIR"
+	for i in $ORIGINAL_ZIMBRA_ROOT/lib/jars/*.jar ; do
+		ln -sf $i
+	done
+}
+
 case "$1" in
 	install)
 		shift
@@ -158,6 +173,10 @@ case "$1" in
 	check-installed)
 		shift
 		zmpkg_check_installed "$@"
+	;;
+	devel-init)
+		shift
+		zmpkg_devinit "$@"
 	;;
 	*)
 		zmpkg_help
