@@ -14,6 +14,17 @@ build:	$(DEBFILE) $(INSTALL_SCRIPT)
 	@cp README.quick README.textile $(DISTDIR)
 	@(cd $(DISTPREFIX) && tar -czf $(DISTFILENAME) $(PACKAGE)-$(VERSION))
 
+ifeq ($(ZIMBRA_ROOT),)
+install:
+	@echo "Please call me with 'make install ZIMBRA_ROOT=<zimbra installation prefix>'"
+	@exit 1
+else
+install:	build
+	@./src/zmpkg install $(DEBFILE)
+	@./src/zmpkg devel-init $(ZIMBRA_ROOT)
+	@echo '== dont forget to add $(HOME)/bin into your $$PATH'
+endif
+
 _image:	$(DEBDIR)/control
 	@mkdir -p image/bin
 	@cp src/zmpkg image/bin
