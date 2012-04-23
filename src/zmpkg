@@ -120,13 +120,16 @@ zmpkg_list() {
 }
 
 zmpkg_check_installed() {
-	if dpkg_call -s "$1" 2>/dev/null >/dev/null; then
-		exit 0
-	elif dpkg_call -s "$1:All" 2>/dev/null >/dev/null; then
-		exit 0
-	else
-		exit 1
-	fi
+	pkglist=`echo "$*" | sed -e 's~,~ ~g'`
+	for i in $pkglist ; do
+		if [ "$i" != "__NONE__" ]; then
+			if ! ( dpkg_call -s "$i" || dpkg_call -s "$i:All" ) 2>/dev/null >/dev/null; then
+				err "missing dependency $i"
+				exit 1
+			fi
+		fi
+	done
+	exit 0
 }
 
 zmpkg_remove() {
@@ -145,11 +148,16 @@ zmpkg_devinit() {
 		exit 2
 	fi
 	local ORIGINAL_ZIMBRA_ROOT="$1"
-	local JARDIR=$ZIMBRA_ROOT/lib/jars
-	mkdir -p $JARDIR || err "failed to create $JARDIR"
-	cd $JARDIR || err "failed to chdir to $JARDIR"
-	for i in $ORIGINAL_ZIMBRA_ROOT/lib/jars/*.jar ; do
-		ln -sf $i
+	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
+
+	for i in $dirlist ; do
+		mkdir -p $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
+		(
+			cd $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
+			for i in $ORIGINAL_ZIMBRA_ROOT/$i/*.jar ; do
+				ln -sf $i
+			done
+		)
 	done
 }
 

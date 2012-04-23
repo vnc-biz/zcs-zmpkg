@@ -6,6 +6,11 @@ DEBDIR=$(IMAGE_ROOT)/DEBIAN
 DEBFILE=$(PACKAGE)_$(VERSION)_$(ARCHITECTURE).deb
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
+SCRIPT_FILES=\
+	zmpkg			\
+	zm_check_jsp		\
+	zm_redmine_upload
+
 all:	build
 
 build:	$(DEBFILE) $(INSTALL_SCRIPT)
@@ -27,8 +32,7 @@ endif
 
 _image:	$(DEBDIR)/control
 	@mkdir -p image/bin
-	@cp src/zmpkg image/bin
-	@chmod +x image/bin/zmpkg
+	@for i in $(SCRIPT_FILES) ; do cp src/$$i image/bin ; chmod +x image/bin/$$i ; done
 
 clean:
 	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE)
@@ -57,14 +61,14 @@ upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_PASSWORD)" ]; then echo "REDMINE_UPLOAD_PASSWORD environment variable must be set" ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_URL)" ]; then echo "REDMINE_UPLOAD_URL variable must be set" ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ]; then echo "REDMINE_UPLOAD_PROJECT variable must be set" ; exit 1 ; fi
-	@upload_file_to_redmine.py		\
+	@./src/zm_redmine_upload		\
 		-f $(DEBFILE)			\
 		-l $(REDMINE_UPLOAD_URL)	\
 		-u $(REDMINE_UPLOAD_USER)	\
 		-w $(REDMINE_UPLOAD_PASSWORD)	\
 		-p $(REDMINE_UPLOAD_PROJECT)	\
 		-d "$(DEBFILE)"
-	@upload_file_to_redmine.py		\
+	@./src/zm_redmine_upload		\
 		-f $(DISTFILE)			\
 		-l $(REDMINE_UPLOAD_URL)	\
 		-u $(REDMINE_UPLOAD_USER)	\

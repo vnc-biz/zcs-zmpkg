@@ -1,0 +1,35 @@
+#!/bin/bash
+
+ME="$0"
+
+die() {
+	echo "$ME: $*" >&2
+	exit 1
+}
+
+[ "$JAVA"  ] || JAVA=java
+[ "$JAVAC" ] || JAVAC=javac
+[ "$JSPC_TMP" ] || JSPC_TMP=_jspc_tmp
+[ "$ZIMBRA_BUILD_ROOT" ] || die "missing ZIMBRA_BUILD_ROOT environment variable"
+
+for jar in `find "$ZIMBRA_BUILD_ROOT/jetty/lib/" -name "*.jar"` ; do
+    CLASSPATH="$CLASSPATH:$jar"
+done
+
+jspc() {
+    java -cp "$CLASSPATH" org.apache.jasper.JspC "$@"
+}
+
+rm -Rf $JSPC_TMP
+
+jspc -uriroot . -d $JSPC_TMP "$1"
+
+JAVA_FILES=`find $JSPC_TMP -name "*.java"`
+
+if [ ! "$JAVA_FILES" ]; then
+    echo "$0: jspc did not produce any output files. something went wrong"
+    echo "JAVA_FILES=$JAVA_FILES"
+    exit 1
+fi
+
+$JAVAC -Xlint:unchecked -classpath "$CLASSPATH:$JSP_CLASSPATH" $JAVA_FILES && rm -Rf $JSPC_TMP
