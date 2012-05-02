@@ -48,13 +48,13 @@ $(DEBFILE):	_image
 $(DEBDIR)/control:	control.in
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
 	@cat $< | \
-	    sed -E 's/@PACKAGE@/$(PACKAGE)/' | \
-	    sed -E 's/@VERSION@/$(VERSION)/' | \
-	    sed -E 's/@MAINTAINER@/$(MAINTAINER)/' | \
-	    sed -E 's/@SECTION@/$(SECTION)/' | \
-	    sed -E 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
-	    sed -E 's/@PRIORITY@/$(PRIORITY)/' | \
-	    sed -E 's/@DESCRIPTION@/$(DESCRIPTION)/' > $@
+	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
+	    sed -e 's/@VERSION@/$(VERSION)/' | \
+	    sed -e 's/@MAINTAINER@/$(MAINTAINER)/' | \
+	    sed -e 's/@SECTION@/$(SECTION)/' | \
+	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
+	    sed -e 's/@PRIORITY@/$(PRIORITY)/' | \
+	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' > $@
 
 upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_USER)" ]; then echo "REDMINE_UPLOAD_USER environment variable must be set" ; exit 1 ; fi
