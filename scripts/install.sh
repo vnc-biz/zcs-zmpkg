@@ -62,7 +62,7 @@ dpkg_init() {
 
 dpkg_call() {
 	dpkg_init
-	su $ZIMBRA_USER -- fakeroot-ng dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log "$@"
+	su $ZIMBRA_USER -c "/usr/bin/fakeroot-ng /usr/bin/dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log $*"
 }
 
 ## only want to run as unprivileged user
