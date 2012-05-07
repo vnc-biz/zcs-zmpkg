@@ -2,51 +2,79 @@
 
 ME="$0"
 
+ZIMBRA_USER="zimbra"
+ZIMBRA_GROUP="zimbra"
+
+ZIMBRA_DIRS="
+    /var/lib/dpkg
+    /var/lib/dpkg/updates
+    /var/lib/dpkg/triggers
+    /var/log/
+    /.tmp
+    /bin
+    /lib/jars
+    /zimlets-install
+    /packages
+    /services
+"
+
+ZIMBRA_FILES="
+    /var/lib/dpkg/status
+    /var/lib/dpkg/available
+"
+
+MY_COMMANDS="
+    bin/zmpkg
+    bin/zm_check_jsp
+    bin/zm_redmine_upload
+"
+
 err() {
 	echo "$ME: $*" >&2
 	exit 1
 }
 
 zmpkg_help() {
-	echo "$ME <zimbra-user> <zimbra-root>" >&2
+	echo "$ME <zimbra-root>" >&2
 	exit 1
 }
 
 dpkg_init() {
-	mkdir -p \
-		$ZIMBRA_HOME/var/lib/dpkg		\
-		$ZIMBRA_HOME/var/lib/dpkg/updates	\
-		$ZIMBRA_HOME/var/lib/dpkg/triggers	\
-		$ZIMBRA_HOME/var/lib/dpkg/info		\
-		$ZIMBRA_HOME/var/log			\
-		$ZIMBRA_HOME/.tmp			\
+	for i in $ZIMBRA_DIRS ; do
+		mkdir -p $ZIMBRA_HOME/$i
+		chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/$i
+	done
 
-	touch	\
-		$ZIMBRA_HOME/var/lib/dpkg/status	\
-		$ZIMBRA_HOME/var/lib/dpkg/available
+	for i in $ZIMBRA_FILES ; do
+		touch $ZIMBRA_HOME/$i
+		chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/$i
+	done
 
-	chown -R $ZIMBRA_USER	$ZIMBRA_HOME/var/ $ZIMBRA_HOME/bin
+	for i in $MY_COMMANDS ; do
+		if [ -f $ZIMBRA_HOME/$i ]; then
+			chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/$i
+		fi
+	done
 
-	find /opt/zimbra -type d | xargs chown $ZIMBRA_USER
+	## scan for probably wrong ownerships
+	find $ZIMBRA_HOME/mailboxd/webapps -not -user zimbra -or -not -group zimbra -exec "echo" "WARN: probably wrong ownership:" "{}" ";"
 }
 
 dpkg_call() {
 	dpkg_init
-	su $ZIMBRA_USERNAME -- fakeroot dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log "$@"
+	su $ZIMBRA_USER -- fakeroot-ng dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log "$@"
 }
 
 ## only want to run as unprivileged user
 [ `whoami` != 'root' ] && err "I wanna run as root"
 
-if [ ! "$2" ]; then
+if [ ! "$1" ]; then
 	zmpkg_help
 fi
 
-ZIMBRA_USER="$1"
-ZIMBRA_HOME="$2"
-ZIMBRA_USERNAME=`echo "$ZIMBRA_USER" | sed -e 's/:.*//'`
+ZIMBRA_HOME="$1"
 
-if ! fakeroot /bin/true ; then
+if ! fakeroot-ng /bin/true ; then
 	err "$0: fakeroot needs to be installed"
 fi
 
@@ -54,4 +82,4 @@ if ! dpkg --help >/dev/null ; then
 	err "$0: dpkg needs to be installed"
 fi
 
-dpkg_call -i zcs-zmpkg_1.0.1_All.deb
+dpkg_call -i zcs-zmpkg*.deb
