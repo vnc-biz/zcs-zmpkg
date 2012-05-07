@@ -16,6 +16,8 @@ all:	build
 build:	$(DEBFILE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
 	@cp $(DEBFILE) $(DISTDIR)
+	@mkdir -p $(IMAGE_ROOT)/zimlets-install
+	@touch $(IMAGE_ROOT)/zimlets-install/.keep
 	@cp README.quick README.textile $(DISTDIR)
 	@(cd $(DISTPREFIX) && tar -czf $(DISTFILENAME) $(PACKAGE)-$(VERSION))
 
