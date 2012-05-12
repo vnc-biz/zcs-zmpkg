@@ -149,8 +149,9 @@ zmpkg_devinit() {
 		exit 2
 	fi
 	local ORIGINAL_ZIMBRA_ROOT="$1"
-	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
 
+	## global libdir
+	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
 	for i in $dirlist ; do
 		mkdir -p $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
 		(
@@ -160,6 +161,37 @@ zmpkg_devinit() {
 			done
 		)
 	done
+
+
+	## user frontend web container
+	local user_lib="mailboxd/webapps/zimbra/WEB-INF/lib"
+	mkdir -p $ZIMBRA_ROOT/$user_lib
+	(
+		cd $ZIMBRA_ROOT/$user_lib
+		for i in $ORIGINAL_ZIMBRA_ROOT/$user_lib/*.jar ; do
+			ln -sf $i
+		done
+	)
+
+	## admin backend web containr
+	local admin_lib="mailboxd/webapps/zimbraAdmin/WEB-INF/lib"
+	mkdir -p $ZIMBRA_ROOT/$admin_lib
+	(
+		cd $ZIMBRA_ROOT/$admin_lib
+		for i in $ORIGINAL_ZIMBRA_ROOT/$admin_lib/*.jar ; do
+			ln -sf $i
+		done
+	)
+
+	## service web containr
+	local service_lib="mailboxd/webapps/service/WEB-INF/lib"
+	mkdir -p $ZIMBRA_ROOT/$service_lib
+	(
+		cd $ZIMBRA_ROOT/$service_lib
+		for i in $ORIGINAL_ZIMBRA_ROOT/$service_lib/*.jar ; do
+			ln -sf $i
+		done
+	)
 }
 
 case "$1" in
