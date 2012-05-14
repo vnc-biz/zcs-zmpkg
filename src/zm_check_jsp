@@ -17,12 +17,12 @@ for jar in `find "$ZIMBRA_BUILD_ROOT/jetty/lib/" -name "*.jar"` ; do
 done
 
 jspc() {
-    java -cp "$CLASSPATH" org.apache.jasper.JspC "$@"
+    java -cp "$CLASSPATH:$JSP_CLASSPATH" org.apache.jasper.JspC "$@"
 }
 
 rm -Rf $JSPC_TMP
 
-jspc -uriroot . -d $JSPC_TMP "$1"
+jspc -compile -uriroot . -d $JSPC_TMP "$1"
 
 JAVA_FILES=`find $JSPC_TMP -name "*.java"`
 
