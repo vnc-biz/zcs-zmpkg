@@ -6,9 +6,11 @@ ZIMBRA_USER="zimbra"
 ZIMBRA_GROUP="zimbra"
 
 ZIMBRA_DIRS="
+    /var/lib
     /var/lib/dpkg
     /var/lib/dpkg/updates
     /var/lib/dpkg/triggers
+    /var/lib/dpkg/info
     /var/log/
     /.tmp
     /bin
