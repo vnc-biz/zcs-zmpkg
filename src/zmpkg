@@ -33,7 +33,7 @@ dpkg_init() {
 dpkg_call() {
 	dpkg_init
 	export PATH="$PATH:/sbin:/usr/sbin"
-	fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
 }
 
 zmpkg_help() {
@@ -126,9 +126,10 @@ zmpkg_install() {
 }
 
 zmpkg_list() {
-	dpkg_call -l "$@"
+	dpkg_call -l "$@" | sed -e 's~:All ~     ~'
 }
 
+## fixme should support versioning
 zmpkg_check_installed() {
 	pkglist=`echo "$*" | sed -e 's~,~ ~g'`
 	for i in $pkglist ; do
@@ -144,10 +145,11 @@ zmpkg_check_installed() {
 
 zmpkg_remove() {
 	local l=""
+	local i
 	for i in "$@" ; do
-		l="$list $i $i:All"
+		i=`echo "$i" | sed -e 's~:All~~'`
+		l="$l $i:All"
 	done
-
 	dpkg_call -r $l
 	zmpkg_deploy_zimlets
 }
@@ -170,7 +172,6 @@ zmpkg_devinit() {
 			done
 		)
 	done
-
 
 	## user frontend web container
 	local user_lib="mailboxd/webapps/zimbra/WEB-INF/lib"
