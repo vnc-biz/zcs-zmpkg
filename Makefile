@@ -1,9 +1,8 @@
 
 TOPDIR=.
-include $(TOPDIR)/conf.mk
+include $(TOPDIR)/common.mk
 
 DEBDIR=$(IMAGE_ROOT)/DEBIAN
-DEBFILE=$(PACKAGE)_$(VERSION)_$(ARCHITECTURE).deb
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
 SCRIPT_FILES=\
@@ -13,13 +12,13 @@ SCRIPT_FILES=\
 
 all:	build
 
-build:	$(DEBFILE) $(INSTALL_SCRIPT)
+build:	$(DEBIAN_PACKAGE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
-	@cp $(DEBFILE) $(DISTDIR)
+	@cp $(DEBIAN_PACKAGE) $(DISTDIR)
 	@mkdir -p $(IMAGE_ROOT)/zimlets-install
 	@touch $(IMAGE_ROOT)/zimlets-install/.keep
 	@cp README.quick README.textile $(DISTDIR)
-	@(cd $(DISTPREFIX) && tar -czf $(DISTFILENAME) $(PACKAGE)-$(VERSION))
+	@(cd $(DISTPREFIX) && tar -cz $(PACKAGE)-$(VERSION)) > $(DISTFILE)
 
 ifeq ($(ZIMBRA_ROOT),)
 install:
@@ -37,21 +36,21 @@ _image:	$(DEBDIR)/control
 	@for i in $(SCRIPT_FILES) ; do cp src/$$i image/bin ; chmod +x image/bin/$$i ; done
 
 clean:
-	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE)
+	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE) *.deb
 
 $(INSTALL_SCRIPT):	scripts/install.sh
 	@mkdir -p $(DISTDIR)
 	@cat $< | sed -e 's~@DEBFILE@~$(DEBFILE)~' > $@
 	@chmod +x $@
 
-$(DEBFILE):	_image
+$(DEBIAN_PACKAGE):	_image $(DEBDIR)/control
 	@dpkg --build $(IMAGE_ROOT) .
 
 $(DEBDIR)/control:	control.in
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
 	@cat $< | \
 	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
-	    sed -e 's/@VERSION@/$(VERSION)/' | \
+	    sed -e 's/@VERSION@/$(PACKAGING_VERSION)/' | \
 	    sed -e 's/@MAINTAINER@/$(MAINTAINER)/' | \
 	    sed -e 's/@SECTION@/$(SECTION)/' | \
 	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
@@ -59,10 +58,10 @@ $(DEBDIR)/control:	control.in
 	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' > $@
 
 upload:	all
-	@if [ ! "$(REDMINE_UPLOAD_USER)" ]; then echo "REDMINE_UPLOAD_USER environment variable must be set" ; exit 1 ; fi
+	@if [ ! "$(REDMINE_UPLOAD_USER)" ];     then echo "REDMINE_UPLOAD_USER environment variable must be set"     ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_PASSWORD)" ]; then echo "REDMINE_UPLOAD_PASSWORD environment variable must be set" ; exit 1 ; fi
-	@if [ ! "$(REDMINE_UPLOAD_URL)" ]; then echo "REDMINE_UPLOAD_URL variable must be set" ; exit 1 ; fi
-	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ]; then echo "REDMINE_UPLOAD_PROJECT variable must be set" ; exit 1 ; fi
+	@if [ ! "$(REDMINE_UPLOAD_URL)" ];      then echo "REDMINE_UPLOAD_URL variable must be set"                  ; exit 1 ; fi
+	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ];  then echo "REDMINE_UPLOAD_PROJECT variable must be set"              ; exit 1 ; fi
 	@./src/zm_redmine_upload		\
 		-f $(DEBFILE)			\
 		-l $(REDMINE_UPLOAD_URL)	\
