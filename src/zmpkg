@@ -105,6 +105,15 @@ zmpkg_deploy_zimlets() {
 		fi
 	done
 
+	## remove stale post-install markers
+	for marker in `find $ZIMBRA_ROOT/zimlets-install -name "post-install.sh.deployed" 2>/dev/null` ; do
+		local orig=`echo "$marker" | sed -e 's~\.deployed$~~'`
+		if [ ! -f "$orig" ]; then
+			log "Removing old post-install marker: $orig"
+			rm -f "$marker"
+		fi
+	done
+
 	## removed empty directories
 	find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
 	find $ZIMBRA_ROOT/zimlets-scripts -type d -exec "rmdir" "{}" ";" 2>/dev/null
