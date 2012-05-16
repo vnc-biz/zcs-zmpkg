@@ -18,7 +18,7 @@ build:	$(DEBIAN_PACKAGE) $(INSTALL_SCRIPT)
 	@mkdir -p $(IMAGE_ROOT)/zimlets-install
 	@touch $(IMAGE_ROOT)/zimlets-install/.keep
 	@cp README.quick README.textile $(DISTDIR)
-	@(cd $(DISTPREFIX) && tar -cz $(PACKAGE)-$(VERSION)) > $(DISTFILE)
+	@(cd $(DISTPREFIX) && tar -cz $(PACKAGE)-$(PACKAGING_VERSION)) > $(DISTFILE)
 
 ifeq ($(ZIMBRA_ROOT),)
 install:
@@ -48,6 +48,7 @@ $(DEBIAN_PACKAGE):	_image $(DEBDIR)/control
 
 $(DEBDIR)/control:	control.in
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
+ifeq ($(DEPENDS),)
 	@cat $< | \
 	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
 	    sed -e 's/@VERSION@/$(PACKAGING_VERSION)/' | \
@@ -55,7 +56,20 @@ $(DEBDIR)/control:	control.in
 	    sed -e 's/@SECTION@/$(SECTION)/' | \
 	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
 	    sed -e 's/@PRIORITY@/$(PRIORITY)/' | \
+	    sed -e 's/@DEPENDS@/$(DEPENDS)/' | \
+	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' | \
+	    grep -ve "^Depends: " > $@
+else
+	@cat $< | \
+	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
+	    sed -e 's/@VERSION@/$(PACKAGING_VERSION)/' | \
+	    sed -e 's/@MAINTAINER@/$(MAINTAINER)/' | \
+	    sed -e 's/@SECTION@/$(SECTION)/' | \
+	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
+	    sed -e 's/@PRIORITY@/$(PRIORITY)/' | \
+	    sed -e 's/@DEPENDS@/$(DEPENDS)/' | \
 	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' > $@
+endif
 
 upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_USER)" ];     then echo "REDMINE_UPLOAD_USER environment variable must be set"     ; exit 1 ; fi
@@ -63,16 +77,16 @@ upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_URL)" ];      then echo "REDMINE_UPLOAD_URL variable must be set"                  ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ];  then echo "REDMINE_UPLOAD_PROJECT variable must be set"              ; exit 1 ; fi
 	@./src/zm_redmine_upload		\
-		-f $(DEBFILE)			\
-		-l $(REDMINE_UPLOAD_URL)	\
-		-u $(REDMINE_UPLOAD_USER)	\
-		-w $(REDMINE_UPLOAD_PASSWORD)	\
-		-p $(REDMINE_UPLOAD_PROJECT)	\
-		-d "$(DEBFILE)"
+		-f "$(DEBIAN_PACKAGE)"		\
+		-l "$(REDMINE_UPLOAD_URL)"	\
+		-u "$(REDMINE_UPLOAD_USER)"	\
+		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
+		-p "$(REDMINE_UPLOAD_PROJECT)"	\
+		-d `basename "$(DEBIAN_PACKAGE)"`
 	@./src/zm_redmine_upload		\
-		-f $(DISTFILE)			\
-		-l $(REDMINE_UPLOAD_URL)	\
-		-u $(REDMINE_UPLOAD_USER)	\
-		-w $(REDMINE_UPLOAD_PASSWORD)	\
-		-p $(REDMINE_UPLOAD_PROJECT)	\
-		-d "$(DISTFILENAME)"
+		-f "$(DISTFILE)"		\
+		-l "$(REDMINE_UPLOAD_URL)"	\
+		-u "$(REDMINE_UPLOAD_USER)"	\
+		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
+		-p "$(REDMINE_UPLOAD_PROJECT)"	\
+		-d `basename "$(DISTFILE)"`

@@ -15,7 +15,7 @@ ZMPKG?=zmpkg
 GIT?=git
 JAVA?=java
 JAVAC?=javac
-JAVAC_FLAGS=-Xlint:unchecked
+JAVAC_FLAGS=-Xlint:unchecked -target 1.6
 JAR?=jar
 ANT?=ant
 COMPILE_JSP?=zm_check_jsp
@@ -35,12 +35,13 @@ INSTALL_DIR=$(IMAGE_ROOT)/zimlets-install/$(PACKAGE)
 DISTPREFIX=$(TOPDIR)/dist
 
 ## directory that will be compressed into the dist tarball
-DISTDIR=$(DISTPREFIX)/$(PACKAGE)-$(VERSION)
+DISTDIR=$(DISTPREFIX)/$(PACKAGE)-$(PACKAGING_VERSION)
 
 ## compressed dist tarball name
-DISTFILE=$(DISTPREFIX)/$(PACKAGE)-$(VERSION).tar.gz
+DISTFILE=$(DISTPREFIX)/$(PACKAGE)-$(PACKAGING_VERSION).tar.gz
 
 ## standard locations within ZCS installation tree
+CONTAINER_ZIMLET_JARDIR=mailboxd/webapps/zimlet/WEB-INF/lib
 ZIMLET_USER_JARDIR=mailboxd/webapps/zimbra/WEB-INF/lib
 ZIMLET_ADMIN_JARDIR=mailboxd/webapps/zimbraAdmin/WEB-INF/lib
 ZIMLET_SERVICE_JARDIR=mailboxd/webapps/service/WEB-INF/lib
