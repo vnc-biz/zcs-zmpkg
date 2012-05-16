@@ -14,7 +14,8 @@ log() {
 ## only want to run as unprivileged user
 [ `whoami` == 'root' ] && err "dont wanna run as root"
 
-ZIMBRA_ROOT=$HOME
+ZIMBRA_ROOT="$HOME"
+PATH="$ZIMBRA_ROOT/bin:$PATH"
 
 dpkg_init() {
 	mkdir -p \
@@ -39,6 +40,7 @@ dpkg_call() {
 }
 
 zmpkg_help() {
+	echo "Available commands:"
 	echo "$ME install <deb-file-name>         install a package file"
 	echo "$ME remove <package-name>           remove a package"
 	echo "$ME list                            list installed packages"
@@ -46,6 +48,17 @@ zmpkg_help() {
 	echo "$ME check-installed <package-name>  check whether package with given name is installed (for scripting use)"
 	echo "$ME devel-init <zimbra-root>        initial local development environment (using given zimbra installation)"
 	echo "$ME dpkg <...>                      direct dpkg call"
+	echo ""
+	if xdpkg --version >/dev/null; then
+		local dpkg_version=`dpkg --version | grep "package management program version" | sed -e 's~.*version ~~' 2>/dev/null`
+		echo "Using dpkg version: $dpkg_version"
+	else
+		echo "========="
+		echo "  WARNING: dpkg command doesn't seem to be installed on your system - I *need* it"
+		echo "  Either install it using your operating system's package management"
+		echo "  or install it manually into $ZIMBRA_ROOT/bin"
+		echo "========="
+	fi
 	exit 1
 }
 
