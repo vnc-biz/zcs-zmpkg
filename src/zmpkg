@@ -33,7 +33,9 @@ dpkg_init() {
 dpkg_call() {
 	dpkg_init
 	export PATH="$PATH:/sbin:/usr/sbin"
-	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+#	older dpkg (eg. 1.5.x, which is in ubuntu 10.x) dont support that
+#	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+	fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
 }
 
 zmpkg_help() {
