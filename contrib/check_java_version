@@ -1,0 +1,64 @@
+#!/bin/bash
+
+translate_version() {
+	case "$1:$2" in
+		45:0)
+			echo "JVM 1.0 ($1:$2)"
+		;;
+		45:3)
+			echo "JVM 1.1 ($1:$2)"
+		;;
+		46:0)
+			echo "JVM 1.2 ($1:$2)"
+		;;
+		47:0)
+			echo "JVM 1.3 ($1:$2)"
+		;;
+		48:0)
+			echo "JVM 1.4 ($1:$2)"
+		;;
+		49:0)
+			echo "JVM 1.5 ($1:$2)"
+		;;
+		50:0)
+			echo "JVM 1.6 ($1:$2)"
+		;;
+		*)
+			echo "Unknown $1:$2"
+		;;
+	esac
+}
+
+do_check_file() {
+	local fn="$1"
+	local dn=`dirname "$1"`
+	local class=`basename "$1" | sed -e 's~\.class~~'`
+	(
+		cd "$dn" || return 0
+		echo -n "$fn "
+		javap -verbose "$class" | grep "version: " | ( \
+			local l
+			local major
+			local minor
+			while read l ; do
+				case "$l" in
+					major\ version*)
+						major=${l##major version: }
+					;;
+					minor\ version*)
+						minor=${l##minor version: }
+					;;
+				esac
+			done
+			translate_version "$major" "$minor"
+		)
+	)
+}
+
+checkit() {
+	while read f ; do
+		do_check_file "$f"
+	done
+}
+
+find -type f -name "*.class" | checkit
