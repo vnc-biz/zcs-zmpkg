@@ -1,8 +1,27 @@
 Simple ZCS package mangement system
 ====================================
 
+building:
+
+    * you'll need dpkg installed and available in $PATH
+    * run: make clean && make
+
 initial deployment:
 
     * make sure dpkg is installed and available in $PATH
-    * run install.sh script
+    * take the generated tarball in dist/ subdir to the target system and unpack it
+    * run the install.sh script from there, as root
+    * it will also create some directories and fix permissions
 
+troubleshooting:
+
+    * current dpkg sometimes has trouble on removing directories if it doesn't have
+      full access to the whole system root (which in our case is: /opt/zimbra),
+      so package uninstallation might fail sometimes
+
+    a) chown the offending directories to zimbra:zimbra before calling zmpkg/dpkg
+       re-run /opt/zimbra/zmfixperms again (so it can fix the permissions back
+       to zimbra's way). might require full ZCS restart after that.
+    b) go the rude way an manually remove the offending directory entries from
+       package database entries (in /opt/zimbra/var/lib/dpkg/info/) and then
+       re-try the zmpkg call
