@@ -85,9 +85,14 @@ mark_deployed() {
 	file_md5 "$1" > "$1.deployed"
 }
 
-zmpkg_deploy_zimlets() {
-	## undeploy remove zimlets
-	for statfile in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip.deployed" 2>/dev/null` ; do
+## scan for deployed zimlets
+scan_deployed_zimlets() {
+	find $ZIMBRA_ROOT/zimlets-install -name "*.zip.deployed" 2>/dev/null | grep -v "/skins/"
+}
+
+## undeploy removed zimlets
+run_undeploy_zimlets() {
+	for statfile in `scan_deployed_zimlets` ; do
 		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
 		local zimlet=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
 		if [ ! -f "$archive" ]; then
@@ -95,23 +100,67 @@ zmpkg_deploy_zimlets() {
 			$ZIMBRA_ROOT/bin/zmzimletctl undeploy "$zimlet" && rm -f $statfile
 		fi
 	done
+}
 
-	## run sql scripts
-	for sqlfile in `find $ZIMBRA_ROOT/zimlets-install -name "mailboxd-db-schema.sql" 2>/dev/null` ; do
+## scan for deployed skins
+scan_deployed_skins() {
+	find $ZIMBRA_ROOT/zimlets-install -name "*.zip.deployed" 2>/dev/null | grep "/skins/"
+}
+
+## undeploy remove zimlets
+run_undeploy_skins() {
+	for statfile in `scan_deployed_skins` ; do
+		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
+		local zimlet=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
+		if [ ! -f "$archive" ]; then
+			log "Undeploying removed zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmskindeploy undeploy "$zimlet" && rm -f $statfile
+		fi
+	done
+}
+
+## run sql scripts
+run_deploy_sql() {
+	for sqlfile in `find $ZIMBRA_ROOT/zimlets-install -maxdepth 1 -name "mailboxd-db-schema.sql" 2>/dev/null` ; do
 		if need_to_deploy $sqlfile ]; then
 			log "Deploying sql file: $sqlfile"
 			run_sql $sqlfile && mark_deployed $sqlfile
 		fi
 	done
+}
 
-	## deploy or redeploy zimlets
-	for zimlet in `find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null` ; do
-		if need_to_deploy "$zimlet" ; then
-			log "Deploying zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$zimlet" && mark_deployed "$zimlet"
+## scan for installed (but probably not yet deployed) zimlet archives
+scan_zimlet_archives() {
+	find $ZIMBRA_ROOT/zimlets-install -name "*.zip" 2>/dev/null | grep -v "/skins/"
+}
+
+## deploy zimlets from zimlet archives
+run_deploy_zimlets() {
+	for archive in `scan_zimlet_archives` ; do
+		if need_to_deploy "$archive" ; then
+			log "Deploying zimlet: $archive"
+			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$archive" && mark_deployed "$archive"
 		fi
 	done
+}
 
+## scan for installed (but probably not yet deployed) skin archives
+scan_skin_archives() {
+	$ZIMBRA_ROOT/zimlets-install -name "*.zip" | grep "/skins/"
+}
+
+## deploy skins from skin archives
+run_deploy_skins() {
+	for archive in `scan_zimlet_archives` ; do
+		if need_to_deploy "$zimlet" ; then
+			log "Deploying zimlet: $zimlet"
+			$ZIMBRA_ROOT/bin/zmskindeploy "$zimlet" && mark_deployed "$zimlet"
+		fi
+	done
+}
+
+## run the post-install scripts
+run_postinstall() {
 	## run post-install scripts
 	for scriptfile in `find $ZIMBRA_ROOT/zimlets-install -name "post-install.sh" 2>/dev/null` ; do
 		if need_to_deploy $scriptfile ; then
@@ -128,6 +177,15 @@ zmpkg_deploy_zimlets() {
 			rm -f "$marker"
 		fi
 	done
+}
+
+zmpkg_deploy_zimlets() {
+	run_undeploy_zimlets
+	run_undeploy_skins
+	run_deploy_sql
+	run_deploy_zimlets
+	run_deploy_skins
+	run_postinstall
 
 	## removed empty directories
 	find $ZIMBRA_ROOT/zimlets-install -type d -exec "rmdir" "{}" ";" 2>/dev/null
