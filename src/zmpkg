@@ -49,7 +49,7 @@ zmpkg_help() {
 	echo "$ME devel-init <zimbra-root>        initial local development environment (using given zimbra installation)"
 	echo "$ME dpkg <...>                      direct dpkg call"
 	echo ""
-	if xdpkg --version >/dev/null; then
+	if dpkg --version >/dev/null; then
 		local dpkg_version=`dpkg --version | grep "package management program version" | sed -e 's~.*version ~~' 2>/dev/null`
 		echo "Using dpkg version: $dpkg_version"
 	else
