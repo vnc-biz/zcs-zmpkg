@@ -111,10 +111,10 @@ scan_deployed_skins() {
 run_undeploy_skins() {
 	for statfile in `scan_deployed_skins` ; do
 		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
-		local zimlet=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
+		local skin=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
 		if [ ! -f "$archive" ]; then
-			log "Undeploying removed zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmskindeploy undeploy "$zimlet" && rm -f $statfile
+			log "Undeploying removed skin: $skin"
+			$ZIMBRA_ROOT/bin/zmskindeploy undeploy "$skin" && rm -f $statfile
 		fi
 	done
 }
@@ -146,15 +146,15 @@ run_deploy_zimlets() {
 
 ## scan for installed (but probably not yet deployed) skin archives
 scan_skin_archives() {
-	$ZIMBRA_ROOT/zimlets-install -name "*.zip" | grep "/skins/"
+	find $ZIMBRA_ROOT/zimlets-install -name "*.zip" | grep "/skins/"
 }
 
 ## deploy skins from skin archives
 run_deploy_skins() {
-	for archive in `scan_zimlet_archives` ; do
-		if need_to_deploy "$zimlet" ; then
-			log "Deploying zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmskindeploy "$zimlet" && mark_deployed "$zimlet"
+	for archive in `scan_skin_archives` ; do
+		if need_to_deploy "$archive" ; then
+			log "Deploying skin: $archive"
+			$ZIMBRA_ROOT/bin/zmskindeploy "$archive" && mark_deployed "$archive"
 		fi
 	done
 }
