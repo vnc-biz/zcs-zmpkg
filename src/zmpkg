@@ -216,13 +216,38 @@ zmpkg_check_installed() {
 	exit 0
 }
 
+## newer versions of dpkg want ":<arch>" given in package name on non-native archs (eg. "All")
+zmpkg_need_pkgname_filter() {
+	local version=`dpkg_call --version | grep "version"`
+	case "$version" in
+	    *1.14*)
+		    return 1
+	    ;;
+	    *1.16*)
+		    return 0
+	    ;;
+	    *)
+		    return 0
+	    ;;
+	esac
+}
+
 zmpkg_remove() {
 	local l=""
 	local i
-	for i in "$@" ; do
-		i=`echo "$i" | sed -e 's~:All~~'`
-		l="$l $i:All"
-	done
+
+	if zmpkg_need_pkgname_filter ; then
+		for i in "$@" ; do
+			i=`echo "$i" | sed -e 's~:All~~'`
+			l="$l $i:All"
+		done
+	else
+		for i in "$@" ; do
+			i=`echo "$i" | sed -e 's~:All~~'`
+			l="$l $i"
+		done
+	fi
+
 	dpkg_call -r $l
 	zmpkg_deploy_zimlets
 }
