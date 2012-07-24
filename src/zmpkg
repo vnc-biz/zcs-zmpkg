@@ -113,8 +113,10 @@ run_undeploy_skins() {
 		local archive=`echo "$statfile" | sed -e 's~.deployed$~~'`
 		local skin=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
 		if [ ! -f "$archive" ]; then
-			log "Undeploying removed skin: $skin"
-			$ZIMBRA_ROOT/bin/zmskindeploy undeploy "$skin" && rm -f $statfile
+#			log "Undeploying removed skin: $skin"
+#			$ZIMBRA_ROOT/bin/zmskindeploy undeploy "$skin" && rm -f $statfile
+			log "WARN: Removed skin needs to be undeployed manually: $skin"
+			rm -f $statfile
 		fi
 	done
 }
