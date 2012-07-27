@@ -261,6 +261,11 @@ zmpkg_devinit() {
 	fi
 	local ORIGINAL_ZIMBRA_ROOT="$1"
 
+	if [ `whoami` == "zimbra" ]; then
+		echo "$0: never run devel-init as the zimbra user - it would destroy your zimbra installation !"
+		exit 3
+	fi
+
 	## global libdir
 	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
 	for i in $dirlist ; do
