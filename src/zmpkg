@@ -266,6 +266,24 @@ zmpkg_devinit() {
 		exit 3
 	fi
 
+	## dummy for zmzimletctl
+	(
+	    echo '#!/bin/bash'
+	    echo ''
+	    echo 'echo "zimletctl dummy: " $0 $*'
+	    echo 'exit 0'
+	) > $ZIMBRA_ROOT/bin/zmzimletctl
+	chmod +x $ZIMBRA_ROOT/bin/zmzimletctl
+
+	## dummy for zmskindeploy
+	(
+	    echo '#!/bin/bash'
+	    echo ''
+	    echo 'echo "zmskindeploy dummy: " $0 $*'
+	    echo 'exit 0'
+	) > $ZIMBRA_ROOT/bin/zmskindeploy
+	chmod +x $ZIMBRA_ROOT/bin/zmskindeploy
+
 	## global libdir
 	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
 	for i in $dirlist ; do
