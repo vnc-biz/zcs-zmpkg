@@ -5,7 +5,9 @@ include $(TOPDIR)/common.mk
 DEBDIR=$(IMAGE_ROOT)/DEBIAN
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
-SCRIPT_FILES=\
+IMAGE_BIN=$(IMAGE_ROOT)/bin
+
+CMD_FILES=\
 	zmpkg			\
 	zm_check_jsp		\
 	zm_redmine_upload
@@ -26,14 +28,14 @@ install:
 	@exit 1
 else
 install:	build
-	@./src/zmpkg install $(DEBIAN_PACKAGE)
-	@./src/zmpkg devel-init $(ZIMBRA_ROOT)
+	@./src/cmd/zmpkg install $(DEBIAN_PACKAGE)
+	@./src/cmd/zmpkg devel-init $(ZIMBRA_ROOT)
 	@echo '== dont forget to add $(HOME)/bin into your $$PATH'
 endif
 
 _image:	$(DEBDIR)/control
-	@mkdir -p image/bin
-	@for i in $(SCRIPT_FILES) ; do cp src/$$i image/bin ; chmod +x image/bin/$$i ; done
+	@mkdir -p $(IMAGE_BIN)
+	@for i in $(CMD_FILES) ; do cp src/cmd/$$i $(IMAGE_BIN) ; chmod +x $(IMAGE_BIN)/$$i ; done
 
 clean:
 	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE) *.deb
@@ -76,14 +78,14 @@ upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_PASSWORD)" ]; then echo "REDMINE_UPLOAD_PASSWORD environment variable must be set" ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_URL)" ];      then echo "REDMINE_UPLOAD_URL variable must be set"                  ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ];  then echo "REDMINE_UPLOAD_PROJECT variable must be set"              ; exit 1 ; fi
-	@./src/zm_redmine_upload		\
+	@./src/cmd/zm_redmine_upload		\
 		-f "$(DEBIAN_PACKAGE)"		\
 		-l "$(REDMINE_UPLOAD_URL)"	\
 		-u "$(REDMINE_UPLOAD_USER)"	\
 		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
 		-p "$(REDMINE_UPLOAD_PROJECT)"	\
 		-d `basename "$(DEBIAN_PACKAGE)"`
-	@./src/zm_redmine_upload		\
+	@./src/cmd/zm_redmine_upload		\
 		-f "$(DISTFILE)"		\
 		-l "$(REDMINE_UPLOAD_URL)"	\
 		-u "$(REDMINE_UPLOAD_USER)"	\
