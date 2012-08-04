@@ -6,6 +6,8 @@ DEBDIR=$(IMAGE_ROOT)/DEBIAN
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
 IMAGE_BIN=$(IMAGE_ROOT)/bin
+IMAGE_MK=$(IMAGE_ROOT)/extensions-extra/zmpkg/mk
+IMAGE_DOC=$(IMAGE_ROOT)/docs/zmpkg
 
 CMD_FILES=\
 	zmpkg			\
@@ -34,8 +36,10 @@ install:	build
 endif
 
 _image:	$(DEBDIR)/control
-	@mkdir -p $(IMAGE_BIN)
+	@mkdir -p $(IMAGE_BIN) $(IMAGE_MK) $(IMAGE_DOC)
 	@for i in $(CMD_FILES) ; do cp src/cmd/$$i $(IMAGE_BIN) ; chmod +x $(IMAGE_BIN)/$$i ; done
+	@for i in `find src/mk -name "*.mk"` ; do cp $$i $(IMAGE_MK) ; done
+	@for i in `find src/doc -type f` ; do cp $$i $(IMAGE_DOC) ; done
 
 clean:
 	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE) *.deb

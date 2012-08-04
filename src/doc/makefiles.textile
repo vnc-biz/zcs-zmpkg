@@ -1,0 +1,80 @@
+
+= Makefile helper includes =
+
+== Module building ==
+
+Each module is put into its own subdirectory, including a makefile. Depending on the type of module
+(eg. zimlet, java library, etc) one of the following makefile includes can be used to drive the
+build process. (they are mutually exclusive)
+
+=== zcs-zimlet.mk ===
+
+Builds a standard zimlet, by putting everything from the src/ directory
+together, replaces several macros in the zimlet xml descriptor file.
+It also compiles any contained JSP files.
+
+''Required variables:''
+* ''ZIMLET_NAME'':		zimlet identifier
+
+''Optional variables:''
+* ''JSP_BUILD_JARS'':		file names of jar files that should be added to the JSP compiling classpath
+
+=== zcs-skin-user.mk ===
+
+Builds a standard skin for user frontend, by putting everything in src/ directory together.
+
+''Required variables:''
+* ''SKIN_NAME'':		skin name/identifier (as it will appear in zimbra)
+
+=== zcs-latex-doc.mk ===
+
+Builds a PDF document from lyx or latex input. If the lyx source is provided, it will build
+from it, otherwise from tex input.
+
+* ''DOCUMENT_NAME'':		the document's filename base. (input and output files will have this one adding the right suffixes)
+
+=== zcs-java-lib.mk ===
+
+Builds a java library (without external build system) from sources in src/ directory.
+Jar libraries in lib/ directory are automatically added to build classpath.
+
+''Require variables:''
+* ''JAR_FILE_NAME'':		name of output jar file
+* ''INSTALL_LIB'':		set to y, when library should be installed in global lib/jars directory
+* ''INSTALL_USER'':		set to y, when library should be installed in user frontend container
+* ''INSTALL_ZIMLET'':		set to y, when library should be installed in zimlet container
+* ''INSTALL_ADMIN'':		set to y, when library should be installed in admin frontend container
+* ''INSTALL_SERVICE'':		set to y, when library should be installed in service container
+
+''Optional variables:''
+* ''ZCS_LIB_JARS'':		file names of jar files to add to build class build (relative to global lib/jars directory)
+
+=== zcs-java-lib-ant.mk ===
+
+Builds a java library via ant.
+Jar libraries in lib/ directory are automatically added to build classpath.
+
+''Require variables:''
+* ''INSTALL_LIB'':		set to y, when library should be installed in global lib/jars directory
+* ''INSTALL_USER'':		set to y, when library should be installed in user frontend container
+* ''INSTALL_ZIMLET'':		set to y, when library should be installed in zimlet container
+* ''INSTALL_ADMIN'':		set to y, when library should be installed in admin frontend container
+* ''INSTALL_SERVICE'':		set to y, when library should be installed in service container
+* ''BUILD_ANT_SUBDIR'':		subdirectory of ant-based source tree (needs to have an ant build.xml file)
+* ''BUILD_ANT_TARGET'':		ant target to call for building
+* ''BUILD_ANT_JARFILE'':	jar file name which the ant call creates and will be installed
+
+''Optional variables:''
+* ''ZCS_LIB_JARS'':    file names of jar files to add to build class build (relative to global lib/jars directory)
+
+=== zcs-jar-libs.mk ===
+
+Just installs precompiled (binary-only) jar files from lib/ directory.
+
+''Required variables:''
+* ''INSTALL_LIB'':		set to y, when library should be installed in global lib/jars directory
+* ''INSTALL_USER'':		set to y, when library should be installed in user frontend container
+* ''INSTALL_ZIMLET'':		set to y, when library should be installed in zimlet container
+* ''INSTALL_ADMIN'':		set to y, when library should be installed in admin frontend container
+* ''INSTALL_SERVICE'':		set to y, when library should be installed in service container
+* ''JAR_FILES'':		names of the jar files (held in lib/ directory) to be installed
