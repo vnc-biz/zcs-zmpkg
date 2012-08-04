@@ -26,7 +26,7 @@ install:
 	@exit 1
 else
 install:	build
-	@./src/zmpkg install $(DEBFILE)
+	@./src/zmpkg install $(DEBIAN_PACKAGE)
 	@./src/zmpkg devel-init $(ZIMBRA_ROOT)
 	@echo '== dont forget to add $(HOME)/bin into your $$PATH'
 endif
