@@ -1,5 +1,5 @@
 
-POLICY_DEPEND_RULES?=policy-dos2unix policy-java policy-xml policy-css
+POLICY_DEPEND_RULES?=policy-dos2unix policy-java policy-xml
 
 policy:	$(POLICY_DEPEND_RULES)
 
