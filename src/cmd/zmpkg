@@ -39,6 +39,23 @@ dpkg_call() {
 	fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
 }
 
+
+## newer versions of dpkg want ":<arch>" given in package name on non-native archs (eg. "All")
+zmpkg_need_pkgname_filter() {
+	local version=`dpkg_call --version | grep "version"`
+	case "$version" in
+	    *1.14*)
+		    return 1
+	    ;;
+	    *1.16*)
+		    return 0
+	    ;;
+	    *)
+		    return 0
+	    ;;
+	esac
+}
+
 zmpkg_help() {
 	echo "Available commands:"
 	echo "$ME install <deb-file-name>         install a package file"
@@ -58,6 +75,12 @@ zmpkg_help() {
 		echo "  Either install it using your operating system's package management"
 		echo "  or install it manually into $ZIMBRA_ROOT/bin"
 		echo "========="
+		exit 2
+	fi
+	if zmpkg_need_pkgname_filter ; then
+		echo "Package name suffixing enabled for this dpkg version"
+	else
+		echo "Package name suffixing disabled for thi dpkg version"
 	fi
 	exit 1
 }
@@ -216,22 +239,6 @@ zmpkg_check_installed() {
 		fi
 	done
 	exit 0
-}
-
-## newer versions of dpkg want ":<arch>" given in package name on non-native archs (eg. "All")
-zmpkg_need_pkgname_filter() {
-	local version=`dpkg_call --version | grep "version"`
-	case "$version" in
-	    *1.14*)
-		    return 1
-	    ;;
-	    *1.16*)
-		    return 0
-	    ;;
-	    *)
-		    return 0
-	    ;;
-	esac
 }
 
 zmpkg_remove() {
