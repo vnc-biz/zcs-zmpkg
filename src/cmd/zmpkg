@@ -123,7 +123,7 @@ run_undeploy_skins() {
 
 ## run sql scripts
 run_deploy_sql() {
-	for sqlfile in `find $ZIMBRA_ROOT/zimlets-install -maxdepth 1 -name "mailboxd-db-schema.sql" 2>/dev/null` ; do
+	for sqlfile in `find $ZIMBRA_ROOT/zimlets-install -name "mailboxd-db-schema.sql" 2>/dev/null` ; do
 		if need_to_deploy $sqlfile ]; then
 			log "Deploying sql file: $sqlfile"
 			run_sql $sqlfile && mark_deployed $sqlfile
