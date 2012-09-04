@@ -78,3 +78,10 @@ Just installs precompiled (binary-only) jar files from lib/ directory.
 * ''INSTALL_ADMIN'':		set to y, when library should be installed in admin frontend container
 * ''INSTALL_SERVICE'':		set to y, when library should be installed in service container
 * ''JAR_FILES'':		names of the jar files (held in lib/ directory) to be installed
+
+=== zcs-core-jsp.mk ==
+
+Installs new core JSP files
+
+''Optional variables:''
+* ''JSP_BUILD_JARS'':		adds more jar's to the build classpath
