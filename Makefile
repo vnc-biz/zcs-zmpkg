@@ -12,6 +12,7 @@ IMAGE_DOC=$(IMAGE_ROOT)/docs/zmpkg
 CMD_FILES=\
 	zmpkg			\
 	zmpkg-devel-init	\
+	zmpkg-autodeploy	\
 	zm_check_jsp		\
 	zm_redmine_upload
 
