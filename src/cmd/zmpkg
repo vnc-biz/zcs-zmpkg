@@ -160,6 +160,10 @@ case "$1" in
 		shift
 		dpkg_call "$@"
 	;;
+	init)
+		shift
+		dpkg_init
+	;;
 	*)
 		zmpkg_help
 	;;
