@@ -264,79 +264,6 @@ zmpkg_remove() {
 	zmpkg_deploy_zimlets
 }
 
-zmpkg_devinit() {
-	if [ ! "$1" ]; then
-		echo "$0 devel-init <zimbra-root>"
-		exit 2
-	fi
-	local ORIGINAL_ZIMBRA_ROOT="$1"
-
-	if [ `whoami` == "zimbra" ]; then
-		echo "$0: never run devel-init as the zimbra user - it would destroy your zimbra installation !"
-		exit 3
-	fi
-
-	## dummy for zmzimletctl
-	(
-	    echo '#!/bin/bash'
-	    echo ''
-	    echo 'echo "zimletctl dummy: " $0 $*'
-	    echo 'exit 0'
-	) > $ZIMBRA_ROOT/bin/zmzimletctl
-	chmod +x $ZIMBRA_ROOT/bin/zmzimletctl
-
-	## dummy for zmskindeploy
-	(
-	    echo '#!/bin/bash'
-	    echo ''
-	    echo 'echo "zmskindeploy dummy: " $0 $*'
-	    echo 'exit 0'
-	) > $ZIMBRA_ROOT/bin/zmskindeploy
-	chmod +x $ZIMBRA_ROOT/bin/zmskindeploy
-
-	## global libdir
-	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
-	for i in $dirlist ; do
-		mkdir -p $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
-		(
-			cd $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
-			for i in $ORIGINAL_ZIMBRA_ROOT/$i/*.jar ; do
-				ln -sf $i
-			done
-		)
-	done
-
-	## user frontend web container
-	local user_lib="mailboxd/webapps/zimbra/WEB-INF/lib"
-	mkdir -p $ZIMBRA_ROOT/$user_lib
-	(
-		cd $ZIMBRA_ROOT/$user_lib
-		for i in $ORIGINAL_ZIMBRA_ROOT/$user_lib/*.jar ; do
-			ln -sf $i
-		done
-	)
-
-	## admin backend web containr
-	local admin_lib="mailboxd/webapps/zimbraAdmin/WEB-INF/lib"
-	mkdir -p $ZIMBRA_ROOT/$admin_lib
-	(
-		cd $ZIMBRA_ROOT/$admin_lib
-		for i in $ORIGINAL_ZIMBRA_ROOT/$admin_lib/*.jar ; do
-			ln -sf $i
-		done
-	)
-
-	## service web containr
-	local service_lib="mailboxd/webapps/service/WEB-INF/lib"
-	mkdir -p $ZIMBRA_ROOT/$service_lib
-	(
-		cd $ZIMBRA_ROOT/$service_lib
-		for i in $ORIGINAL_ZIMBRA_ROOT/$service_lib/*.jar ; do
-			ln -sf $i
-		done
-	)
-}
-
 case "$1" in
 	install)
 		shift
@@ -360,7 +287,7 @@ case "$1" in
 	;;
 	devel-init)
 		shift
-		zmpkg_devinit "$@"
+		zmpkg-devel-init "$@"
 	;;
 	dpkg)
 		shift
