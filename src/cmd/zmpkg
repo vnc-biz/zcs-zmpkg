@@ -31,18 +31,9 @@ dpkg_init() {
 		$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 }
 
-dpkg_call() {
-	dpkg_init
-	export PATH="$PATH:/sbin:/usr/sbin"
-#	older dpkg (eg. 1.5.x, which is in ubuntu 10.x) dont support that
-#	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
-	fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
-}
-
-
 ## newer versions of dpkg want ":<arch>" given in package name on non-native archs (eg. "All")
 zmpkg_need_pkgname_filter() {
-	local version=`dpkg_call --version | grep "version"`
+	local version=`zmpkg-dpkg --version | grep "version"`
 	case "$version" in
 	    *1.14*)
 		    return 1
@@ -90,11 +81,11 @@ zmpkg_help() {
 
 zmpkg_install() {
 	[ "$1" ] || zmpkg_help
-	dpkg_call -i "$@" && zmpkg-autodeploy
+	zmpkg-dpkg -i "$@" && zmpkg-autodeploy
 }
 
 zmpkg_list() {
-	dpkg_call -l "$@" | sed -e 's~:All ~     ~'
+	zmpkg-dpkg -l "$@" | sed -e 's~:All ~     ~'
 }
 
 ## fixme should support versioning
@@ -102,7 +93,7 @@ zmpkg_check_installed() {
 	pkglist=`echo "$*" | sed -e 's~,~ ~g'`
 	for i in $pkglist ; do
 		if [ "$i" != "__NONE__" ]; then
-			if ! ( dpkg_call -s "$i" || dpkg_call -s "$i:All" ) 2>/dev/null >/dev/null; then
+			if ! ( zmpkg-dpkg -s "$i" || zmpkg-dpkg -s "$i:All" ) 2>/dev/null >/dev/null; then
 				err "missing dependency $i"
 				exit 1
 			fi
@@ -127,7 +118,7 @@ zmpkg_remove() {
 		done
 	fi
 
-	dpkg_call -r $l
+	zmpkg-dpkg -r $l
 	zmpkg-autodeploy
 }
 
@@ -158,7 +149,7 @@ case "$1" in
 	;;
 	dpkg)
 		shift
-		dpkg_call "$@"
+		zmpkg-dpkg "$@"
 	;;
 	init)
 		shift

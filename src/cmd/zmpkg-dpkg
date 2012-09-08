@@ -1,0 +1,30 @@
+#!/bin/bash
+
+ME="$0"
+
+err() {
+	echo "$ME: $*" >&2
+	exit 1
+}
+
+## only want to run as unprivileged user
+[ `whoami` == 'root' ] && err "dont wanna run as root"
+
+ZIMBRA_ROOT="$HOME"
+PATH="$ZIMBRA_ROOT/bin:$PATH:/sbin:/usr/sbin"
+
+mkdir -p \
+	$ZIMBRA_ROOT/var/lib/dpkg		\
+	$ZIMBRA_ROOT/var/lib/dpkg/updates	\
+	$ZIMBRA_ROOT/var/lib/dpkg/triggers	\
+	$ZIMBRA_ROOT/var/lib/dpkg/info		\
+	$ZIMBRA_ROOT/var/log			\
+	$ZIMBRA_ROOT/.tmp			|| err "permission problem. cannot access package database"
+
+touch	\
+	$ZIMBRA_ROOT/var/lib/dpkg/status	\
+	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
+
+#	older dpkg (eg. 1.5.x, which is in ubuntu 10.x) dont support that
+#	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"

@@ -13,6 +13,7 @@ CMD_FILES=\
 	zmpkg			\
 	zmpkg-devel-init	\
 	zmpkg-autodeploy	\
+	zmpkg-dpkg		\
 	zm_check_jsp		\
 	zm_redmine_upload
 
