@@ -5,25 +5,11 @@ include $(TOPDIR)/common.mk
 DEBDIR=$(IMAGE_ROOT)/DEBIAN
 INSTALL_SCRIPT=$(DISTDIR)/install.sh
 
-IMAGE_BIN=$(IMAGE_ROOT)/bin
-IMAGE_MK=$(IMAGE_ROOT)/extensions-extra/zmpkg/mk
-IMAGE_DOC=$(IMAGE_ROOT)/docs/zmpkg
-
-CMD_FILES=\
-	zmpkg			\
-	zmpkg-devel-init	\
-	zmpkg-autodeploy	\
-	zmpkg-dpkg		\
-	zm_check_jsp		\
-	zm_redmine_upload
-
 all:	build
 
 build:	$(DEBIAN_PACKAGE) $(INSTALL_SCRIPT)
 	@mkdir -p $(DISTDIR)
 	@cp $(DEBIAN_PACKAGE) $(DISTDIR)
-	@mkdir -p $(IMAGE_ROOT)/zimlets-install
-	@touch $(IMAGE_ROOT)/zimlets-install/.keep
 	@cp README.quick README.textile $(DISTDIR)
 	@(cd $(DISTPREFIX) && tar -cz $(PACKAGE)-$(PACKAGING_VERSION)) > $(DISTFILE)
 
@@ -33,16 +19,14 @@ install:
 	@exit 1
 else
 install:	build
-	@./src/cmd/zmpkg install $(DEBIAN_PACKAGE)
-	@./src/cmd/zmpkg devel-init $(ZIMBRA_ROOT)
+	@./src/bin/zmpkg install $(DEBIAN_PACKAGE)
+	@./src/bin/zmpkg devel-init $(ZIMBRA_ROOT)
 	@echo '== dont forget to add $(HOME)/bin into your $$PATH'
 endif
 
-_image:	$(DEBDIR)/control
-	@mkdir -p $(IMAGE_BIN) $(IMAGE_MK) $(IMAGE_DOC)
-	@for i in $(CMD_FILES) ; do cp src/cmd/$$i $(IMAGE_BIN) ; chmod +x $(IMAGE_BIN)/$$i ; done
-	@for i in `find src/mk -name "*.mk"` ; do cp $$i $(IMAGE_MK) ; done
-	@for i in `find src/doc -type f` ; do cp $$i $(IMAGE_DOC) ; done
+build-scripts:
+	@mkdir -p $(IMAGE_ROOT)
+	@cp -R --preserve --no-dereference src/* $(IMAGE_ROOT)
 
 clean:
 	@rm -Rf $(DISTPREFIX) $(IMAGE_ROOT) $(DEBFILE) *.deb
@@ -52,7 +36,7 @@ $(INSTALL_SCRIPT):	scripts/install.sh
 	@cat $< | sed -e 's~@DEBFILE@~$(DEBFILE)~' > $@
 	@chmod +x $@
 
-include $(TOPDIR)/src/mk/main-dpkg.mk
+include $(TOPDIR)/src/extensions-extra/zmpkg/mk/main-dpkg.mk
 
 upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_USER)" ];     then echo "REDMINE_UPLOAD_USER environment variable must be set"     ; exit 1 ; fi
