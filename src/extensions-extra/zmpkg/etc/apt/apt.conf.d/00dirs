@@ -1,0 +1,37 @@
+// Directory layout
+Dir "/"
+{
+	// Location of the state dir
+	State "var/lib/apt/"
+	{
+		Lists "lists/";
+		xstatus "xstatus";
+		userstatus "status.user";
+	};
+
+	// Location of the cache dir
+	Cache "var/lib/apt/cache" {
+		Archives "archives/";
+		srcpkgcache "srcpkgcache.bin";
+		pkgcache "pkgcache.bin";
+	};
+
+	// Config files
+	Etc {
+		SourceList "sources.list";
+		Main "apt.conf";
+		Preferences "preferences";
+		Parts "apt.conf.d/";
+	};
+
+	// Locations of binaries
+	Bin {
+		methods "/usr/lib/apt/methods/";
+		gzip "/bin/gzip";
+		dpkg "/home/git/bin/zmpkg-dpkg";
+		dpkg-source "/usr/bin/dpkg-source";
+		dpkg-buildpackage "/usr/bin/dpkg-buildpackage";
+		apt-get "/usr/bin/apt-get";
+		apt-cache "/usr/bin/apt-cache";
+	};
+};

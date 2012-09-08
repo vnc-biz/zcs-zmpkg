@@ -1,0 +1,6 @@
+// Server information for apt-changelog
+APT {
+  Changelogs {
+    Server "http://packages.vnc.biz/zimbra/changelogs";
+  };
+};

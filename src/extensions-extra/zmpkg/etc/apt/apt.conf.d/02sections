@@ -1,0 +1,5 @@
+Aptitude::Sections::Top-Sections { "free"; "commercial"; }
+Aptitude::Sections::Descriptions::free " Free/OpenSource software";
+Aptitude::Sections::Descriptions::commercial " Commercial software";
+Aptitude::Sections::Descriptions::zcs-base " ZCS base packages";
+Aptitude::Sections::Descriptions::zcs-libs " Support libraries";

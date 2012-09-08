@@ -1,0 +1,1 @@
+// APT::Update::Post-Invoke-Success {"mkdir -p ~/var/lib/apt/periodic ; touch ~/var/lib/apt/periodic/update-success-stamp 2>/dev/null || true";};

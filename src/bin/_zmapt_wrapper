@@ -1,0 +1,79 @@
+#!/bin/bash
+
+ME="$0"
+
+err() {
+	echo "$ME: $*" >&2
+	exit 1
+}
+
+log() {
+	echo "$*" >&2
+}
+
+## only want to run as unprivileged user
+[ `whoami` == 'root' ] && err "dont wanna run as root"
+
+ZIMBRA_ROOT="$HOME"
+PATH="$ZIMBRA_ROOT/bin:$PATH"
+
+APT_CONFDIR=$ZIMBRA_ROOT/extensions-extra/zmpkg/etc/apt
+APT_DATADIR=$ZIMBRA_ROOT/var/lib/apt
+
+export APT_CONFIG=$APT_CONFDIR/apt.conf
+
+mkdir -p \
+	$APT_CONFDIR/apt.conf.d			\
+	$APT_CONFDIR/preferences.d		\
+	$APT_DATADIR/cache/archives/partial	\
+	$APT_DATADIR/lists/partial		\
+	$ZIMBRA_ROOT/var/lib/dpkg		\
+	$ZIMBRA_ROOT/var/lib/dpkg/updates	\
+	$ZIMBRA_ROOT/var/lib/dpkg/triggers	\
+	$ZIMBRA_ROOT/var/lib/dpkg/info		\
+	$ZIMBRA_ROOT/var/log			\
+	$ZIMBRA_ROOT/.tmp			|| err "permission problem. cannot access package database"
+
+touch	\
+	$ZIMBRA_ROOT/var/lib/dpkg/status	\
+	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
+
+(
+	echo "// AUTO-CREATED"
+	echo "Dir \"$ZIMBRA_ROOT\";"
+	echo "Dir::Etc \"$APT_CONFDIR\";"
+	echo "Dir::State::Status \"$ZIMBRA_ROOT/var/lib/dpkg/status\";"
+	echo "Dpkg::Run-Directory \"$ZIMBRA_ROOT\";"
+	echo "Dir::Bin::dpkg \"$ZIMBRA_ROOT/bin/zmpkg-dpkg\";"
+	echo "Dir::Cache \"$APT_DATADIR/cache\";"
+	echo "Aptitude::Sections::Descriptions::free           \" - Free/OpenSource\";"
+	echo "Aptitude::Sections::Descriptions::commercial     \" - Commercial\";"
+	echo "Aptitude::Sections::Descriptions::customer       \" - Customer specific\";"
+	echo "Aptitude::Sections::Descriptions::zcs-base       \" - Base packages\";"
+	echo "Aptitude::Sections::Descriptions::zcs-libs       \" - Libraries\";"
+	echo "Aptitude::Sections::Descriptions::zcs-customer   \" - Customer specific\";"
+	echo "Aptitude::Sections::Descriptions::zcs-skin       \" - Skining\";"
+	echo "Aptitude::Sections::Descriptions::zcs-admin      \" - Admin extensions\";"
+	echo "Aptitude::Sections::Descriptions::zcs-core       \" - Core components\";"
+	echo "Aptitude::Sections::Descriptions::zcs-frontend   \" - Frontend components\";"
+	echo "Aptitude::Sections::Descriptions::zcs-extension  \" - Extensions\";"
+	echo "Aptitude::Sections::Descriptions::zcs-util       \" - Utilities\";"
+	echo "Aptitude::Sections::Descriptions::zcs-connector  \" - Connectors to external systems\";"
+	echo "Aptitude::Sections::Descriptions::zcs-office     \" - Office / Business applications\";"
+) > $APT_CONFIG
+
+case `basename "$0"` in
+	zm-apt-get)
+		apt-get -c $APT_CONFIG "$@"
+	;;
+	zm-aptitude)
+		fakeroot aptitude "$@"
+	;;
+	zm-apt-config)
+		apt-config -c $APT_CONFIG "$@"
+	;;
+	*)
+		err "called with wrong name: $0"
+		exit 1
+	;;
+esac
