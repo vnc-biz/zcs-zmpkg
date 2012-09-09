@@ -52,33 +52,7 @@ $(INSTALL_SCRIPT):	scripts/install.sh
 	@cat $< | sed -e 's~@DEBFILE@~$(DEBFILE)~' > $@
 	@chmod +x $@
 
-$(DEBIAN_PACKAGE):	_image $(DEBDIR)/control
-	@dpkg --build $(IMAGE_ROOT) .
-
-$(DEBDIR)/control:	control.in
-	@mkdir -p $(IMAGE_ROOT)/DEBIAN
-ifeq ($(DEPENDS),)
-	@cat $< | \
-	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
-	    sed -e 's/@VERSION@/$(PACKAGING_VERSION)/' | \
-	    sed -e 's/@MAINTAINER@/$(MAINTAINER)/' | \
-	    sed -e 's/@SECTION@/$(SECTION)/' | \
-	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
-	    sed -e 's/@PRIORITY@/$(PRIORITY)/' | \
-	    sed -e 's/@DEPENDS@/$(DEPENDS)/' | \
-	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' | \
-	    grep -ve "^Depends: " > $@
-else
-	@cat $< | \
-	    sed -e 's/@PACKAGE@/$(PACKAGE)/' | \
-	    sed -e 's/@VERSION@/$(PACKAGING_VERSION)/' | \
-	    sed -e 's/@MAINTAINER@/$(MAINTAINER)/' | \
-	    sed -e 's/@SECTION@/$(SECTION)/' | \
-	    sed -e 's/@ARCHITECTURE@/$(ARCHITECTURE)/' | \
-	    sed -e 's/@PRIORITY@/$(PRIORITY)/' | \
-	    sed -e 's/@DEPENDS@/$(DEPENDS)/' | \
-	    sed -e 's/@DESCRIPTION@/$(DESCRIPTION)/' > $@
-endif
+include $(TOPDIR)/src/mk/main-dpkg.mk
 
 upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_USER)" ];     then echo "REDMINE_UPLOAD_USER environment variable must be set"     ; exit 1 ; fi
@@ -99,3 +73,9 @@ upload:	all
 		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
 		-p "$(REDMINE_UPLOAD_PROJECT)"	\
 		-d `basename "$(DISTFILE)"`
+
+build-scripts:
+
+build-zimlets:
+
+.PHONY:	build-scripts build-zimlets upload clean build all install
