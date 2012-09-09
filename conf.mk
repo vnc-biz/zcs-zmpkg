@@ -1,7 +1,7 @@
 VERSION=1.1.11
 PACKAGE=zcs-zmpkg
 MAINTAINER=Enrico Weigelt <enrico.weigelt@vnc.biz>
-SECTION=base
+SECTION=free/zcs-base
 ARCHITECTURE=All
 PRIORITY=optional
 DESCRIPTION=Zimbra package management system
