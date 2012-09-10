@@ -66,4 +66,4 @@ $(JAR_FILE_NAME):	build_classes $(JAR_FILE_PREPARE_RULE)
 	@mkdir -p `dirname "$@"`
 	@$(JAR) cvf $(JAR_FILE_NAME) -C classes .
 
-.PHONY:	build_classes
+.PHONY:	build_classes all build install check-1 clean

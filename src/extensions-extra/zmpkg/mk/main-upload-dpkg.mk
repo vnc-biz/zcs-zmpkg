@@ -29,4 +29,4 @@ upload-skins:
 			-d `basename "$$i"`		;	\
 		done
 
-.PHONY:	upload upload-dpkg
+.PHONY:	upload upload-dpkg upload-check upload-skins

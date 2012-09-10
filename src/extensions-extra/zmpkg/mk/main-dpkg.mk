@@ -1,5 +1,11 @@
 
-$(DEBIAN_PACKAGE)::	$(DEBIAN_DIR)/control build-scripts build-zimlets
+ifeq ($(BUILD_TARGETS),)
+BUILD_TARGETS=build-scripts build-zimlets
+endif
+
+CLEAN_TARGETS+=clean_dpkg
+
+$(DEBIAN_PACKAGE)::	$(DEBIAN_DIR)/control $(BUILD_TARGETS)
 	@dpkg --build $(IMAGE_ROOT) .
 
 $(DEBIAN_DIR)/control:	control.in
@@ -27,4 +33,9 @@ else
 	    sed -e 's~@DESCRIPTION@~$(DESCRIPTION)~' > $@
 endif
 
-.PHONY:	$(DEBIAN_DIR)/control
+clean_dpkg:
+	@rm -Rf $(DEBIAN_FILE) $(DEBIAN_DIR) *.deb
+
+dpkg:	$(DEBIAN_PACKAGE)
+
+.PHONY:	$(DEBIAN_DIR)/control dpkg

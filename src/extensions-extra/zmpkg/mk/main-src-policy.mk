@@ -26,3 +26,5 @@ policy-xml:
 policy-css:
 	@find -name "*.css" | ( \
 	    while read fn ; do 	csstidy "$$fn" "$$fn.tmp" --compress_colors=false --preserve_css=true --template=low && mv "$$fn.tmp" "$$fn" ; done )
+
+.PHONY:	policy policy-dos2unix policy-java policy-xml policy-css

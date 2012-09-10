@@ -57,3 +57,5 @@ clean:
 
 build_ant:
 	@cd $(BUILD_ANT_SUBDIR) && $(ANT) $(BUILD_ANT_TARGET)
+
+.PHONY:	all build check-1 install clean build_ant

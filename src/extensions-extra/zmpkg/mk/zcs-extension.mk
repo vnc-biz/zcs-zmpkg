@@ -51,4 +51,4 @@ $(EXTENSION_JAR):	build_classes $(JAR_FILE_PREPARE_RULE)
 	@cp src/MANIFEST.MF classes
 	@$(JAR) cvf $(EXTENSION_JAR) -C classes .
 
-.PHONY:	build_classes
+.PHONY:	build_classes build check-1 check-2 clean

@@ -62,3 +62,5 @@ clean:		_check
 		$(addprefix $(IMAGE_ROOT)/$(ZIMLET_ADMIN_JARDIR)/,$(JAR_FILES))		\
 		$(addprefix $(IMAGE_ROOT)/$(ZIMLET_USER_JARDIR)/,$(JAR_FILES))		\
 		$(addprefix $(IMAGE_ROOT)/$(ZIMLET_LIB_JARDIR)/,$(JAR_FILES))
+
+.PHONY:	all install _check clean

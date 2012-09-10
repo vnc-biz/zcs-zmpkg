@@ -50,3 +50,5 @@ $(ZIMLET_ZIP):	src/*
 
 jsp:
 	@for i in `find -name "*.jsp"` ; do JSP_CLASSPATH="$(JSP_CLASSPATH)" ZIMBRA_BUILD_ROOT="$(ZIMBRA_BUILD_ROOT)" $(COMPILE_JSP) $$i ; done
+
+.PHONY:	all build jsp clean jsp
