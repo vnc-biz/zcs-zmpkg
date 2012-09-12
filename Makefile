@@ -43,14 +43,14 @@ upload:	all
 	@if [ ! "$(REDMINE_UPLOAD_PASSWORD)" ]; then echo "REDMINE_UPLOAD_PASSWORD environment variable must be set" ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_URL)" ];      then echo "REDMINE_UPLOAD_URL variable must be set"                  ; exit 1 ; fi
 	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ];  then echo "REDMINE_UPLOAD_PROJECT variable must be set"              ; exit 1 ; fi
-	@./src/cmd/zm_redmine_upload		\
+	@./src/bin/zm_redmine_upload		\
 		-f "$(DEBIAN_PACKAGE)"		\
 		-l "$(REDMINE_UPLOAD_URL)"	\
 		-u "$(REDMINE_UPLOAD_USER)"	\
 		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
 		-p "$(REDMINE_UPLOAD_PROJECT)"	\
 		-d `basename "$(DEBIAN_PACKAGE)"`
-	@./src/cmd/zm_redmine_upload		\
+	@./src/bin/zm_redmine_upload		\
 		-f "$(DISTFILE)"		\
 		-l "$(REDMINE_UPLOAD_URL)"	\
 		-u "$(REDMINE_UPLOAD_USER)"	\
