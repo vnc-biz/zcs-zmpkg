@@ -13,6 +13,8 @@ clean:
 	@( cd src && find -type d ) | sort -r | ( while read f ; do rmdir $(IMAGE_ROOT)/$$f 2>/dev/null || true ; done )
 
 jsp:
+ifneq ($(SKIP_JSP_COMPILE),y)
 	@for i in `find -name "*.jsp"` ; do JSP_CLASSPATH="$(JSP_CLASSPATH)" ZIMBRA_BUILD_ROOT="$(ZIMBRA_BUILD_ROOT)" $(COMPILE_JSP) $$i ; done
+endif
 
 .PHONY:	all build jsp clean
