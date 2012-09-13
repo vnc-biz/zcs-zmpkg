@@ -86,3 +86,11 @@ Installs new core JSP files
 ''Optional variables:''
 * ''JSP_BUILD_JARS'':		adds more jar's to the build classpath
 * ''SKIP_JSP_COMPILE'':		when set to "y", skips the core jsp file compile test
+
+=== zcs-core-jsp.mk ==
+
+Similar to ''zcs-core-jsp'', but installs all files in src/ to the zimbra root
+
+''Optional variables:''
+* ''JSP_BUILD_JARS'':		adds more jar's to the build classpath
+* ''SKIP_JSP_COMPILE'':		when set to "y", skips the core jsp file compile test
