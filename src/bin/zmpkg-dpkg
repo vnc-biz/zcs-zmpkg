@@ -25,6 +25,72 @@ touch	\
 	$ZIMBRA_ROOT/var/lib/dpkg/status	\
 	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 
-#	older dpkg (eg. 1.5.x, which is in ubuntu 10.x) dont support that
-#	fakeroot dpkg --force-not-root --foreign-architecture All --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
-fakeroot dpkg --force-not-root --force-architecture --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log "$@"
+zmpkg_foreign_arch() {
+	local version=`dpkg --version | grep "version"`
+	case "$version" in
+	    *1.14*)
+		    return 1
+	    ;;
+	    *1.15.5*)
+		    return 1
+	    ;;
+	    *1.16*)
+		    return 0
+	    ;;
+	    *)
+		    return 0
+	    ;;
+	esac
+}
+
+zmpkg_pkgname_suffix() {
+	local version=`dpkg --version | grep "version"`
+	case "$version" in
+	    *1.14*)
+		    return 1
+	    ;;
+	    *1.15.5*)
+		    return 1
+	    ;;
+	    *1.16*)
+		    return 0
+	    ;;
+	    *)
+		    return 0
+	    ;;
+	esac
+}
+
+## special tweaks for being called from apt-get or aptitude
+## forcing the architecture suffix on passed package names
+if zmpkg_pkgname_suffix ; then
+	PKGNAME_SUFFIX=":All"
+fi
+
+COMMAND=""
+while [ "$1" ]; do
+	case "$1" in
+		"--remove")
+			shift
+			COMMAND="$COMMAND --remove $1$PKGNAME_SUFFIX"
+			shift
+		;;
+		"--configure")
+			shift
+			COMMAND="$COMMAND --configure $1$PKGNAME_SUFFIX"
+			shift
+		;;
+		*)
+			COMMAND="$COMMAND $1"
+			shift
+		;;
+	esac
+done
+
+if zmpkg_foreign_arch; then
+	FOREIGN_ARCH="--foreign-architecture All"
+fi
+
+fakeroot dpkg --force-architecture --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND
+
+zmpkg-autodeploy

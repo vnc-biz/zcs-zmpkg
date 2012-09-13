@@ -1,0 +1,122 @@
+#!/bin/sh
+
+set -e
+unset GREP_OPTIONS
+
+if [ ! "$ZIMBRA_ROOT" ]; then
+	export ZIMBRA_ROOT="$HOME"
+fi
+
+APTCONF=$ZIMBRA_ROOT/extensions-extra/zmpkg/etc/apt
+# export GNUPGHOME=$ZIMBRA_ROOT/extensions-extra/zmpkg/etc/apt
+
+# We don't use a secret keyring, of course, but gpg panics and
+# implodes if there isn't one available
+SECRETKEYRING="$(mktemp)"
+trap "rm -f '${SECRETKEYRING}'" 0 HUP INT QUIT ILL ABRT FPE SEGV PIPE TERM
+GPG_CMD="gpg --ignore-time-conflict --no-options --no-default-keyring --secret-keyring ${SECRETKEYRING}"
+
+if [ "$(id -u)" -eq 0 ]; then
+	# we could use a tmpfile here too, but creation of this tends to be time-consuming
+	GPG_CMD="$GPG_CMD --trustdb-name $APTCONF/trustdb.gpg"
+fi
+
+GPG="$GPG_CMD"
+
+
+usage() {
+    echo "Usage: zm-apt-key [--keyring file] [command] [arguments]"
+    echo
+    echo "Manage apt's list of trusted keys"
+    echo
+    echo "  apt-key add <file>          - add the key contained in <file> ('-' for stdin)"
+    echo "  apt-key del <keyid>         - remove the key <keyid>"
+    echo "  apt-key export <keyid>      - output the key <keyid>"
+    echo "  apt-key exportall           - output all trusted keys"
+    echo "  apt-key list                - list keys"
+    echo "  apt-key finger              - list fingerprints"
+    echo "  apt-key adv                 - pass advanced options to gpg (download key)"
+    echo
+    echo "If no specific keyring file is given the command applies to all keyring files."
+}
+
+# Determine on which keyring we want to work
+if [ "$1" = "--keyring" ]; then
+        #echo "keyfile given"
+	shift
+	TRUSTEDFILE="$1"
+	if [ -r "$TRUSTEDFILE" ]; then
+		GPG="$GPG --keyring $TRUSTEDFILE --primary-keyring $TRUSTEDFILE"
+	else
+		echo >&2 "Error: The specified keyring »$TRUSTEDFILE« is missing or not readable"
+		exit 1
+	fi
+	shift
+# otherwise use the default
+else
+	#echo "generate list"
+	TRUSTEDFILE="$APTCONF/trusted.gpg"
+	eval $(zm-apt-config shell TRUSTEDFILE Apt::GPGV::TrustedKeyring)
+	eval $(zm-apt-config shell TRUSTEDFILE Dir::Etc::Trusted/f)
+	if [ -r "$TRUSTEDFILE" ]; then
+		GPG="$GPG --keyring $TRUSTEDFILE"
+	fi
+	GPG="$GPG --primary-keyring $TRUSTEDFILE"
+	TRUSTEDPARTS="$APTCONF/trusted.gpg.d"
+	eval $(apt-config shell TRUSTEDPARTS Dir::Etc::TrustedParts/d)
+	if [ -d "$TRUSTEDPARTS" ]; then
+		#echo "parts active"
+		for trusted in $(run-parts --list $TRUSTEDPARTS --regex '^.*\.gpg$'); do
+			#echo "part -> $trusted"
+			GPG="$GPG --keyring $trusted"
+		done
+	fi
+fi
+#echo "COMMAND: $GPG"
+
+command="$1"
+if [ -z "$command" ]; then
+    usage
+    exit 1
+fi
+shift
+
+if [ "$command" != "help" ] && ! which gpg >/dev/null 2>&1; then
+    echo >&2 "Warning: gnupg does not seem to be installed."
+    echo >&2 "Warning: apt-key requires gnupg for most operations."
+    echo >&2
+fi
+
+case "$command" in
+    add)
+        $GPG --quiet --batch --import "$1"
+        echo "OK"
+        ;;
+    del|rm|remove)
+        $GPG --quiet --batch --delete-key --yes "$1"
+        echo "OK"
+        ;;
+    list)
+        $GPG --batch --list-keys
+        ;;
+    finger*)
+        $GPG --batch --fingerprint
+        ;;
+    export)
+        $GPG --armor --export "$1"
+        ;;
+    exportall)
+        $GPG --armor --export
+        ;;
+    adv*)
+        echo "Executing: $GPG $*"
+        $GPG $*
+        ;;
+    help)
+        usage
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac
