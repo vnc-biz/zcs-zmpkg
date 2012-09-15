@@ -22,7 +22,7 @@ file_md5() {
 }
 
 run_sql() {
-	$ZIMBRA_ROOT/bin/mysql < $1
+	$ZIMBRA_ROOT/bin/mysql --force < $1
 }
 
 need_to_deploy() {
