@@ -5,7 +5,10 @@ JSP_CLASSPATH=`echo "$(JSP_BUILD_JARS)" | tr ' ' ':'`
 
 all:	build
 
-build:  jsp
+check:
+	@cd $(TOPDIR) && $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree
+
+build:  check jsp
 	@cp -R src/mailboxd $(IMAGE_ROOT)
 	for i in `find $(IMAGE_ROOT)/mailboxd/webapps -name "*.js"` ; do \
 	    cat "$$i" | gzip -9 > "$$i.zgz" ; \

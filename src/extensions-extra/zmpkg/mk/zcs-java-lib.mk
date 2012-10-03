@@ -10,7 +10,7 @@ endif
 
 SRCS=`find -L src -name "*.java"`
 
-all:	check-1	build
+all:	check-1	check-2 build
 
 build:	install
 
@@ -24,6 +24,9 @@ else
 check-1:
 	@true
 endif
+
+check-2:
+	@( cd $(TOPDIR) ; $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree )
 
 install:	$(JAR_FILE_NAME)
 	@true

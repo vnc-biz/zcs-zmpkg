@@ -1,0 +1,131 @@
+#!/bin/bash
+
+TEMPFILE=`mktemp .checksource-XXXXXXXX.tmp`
+
+bad() {
+	echo "$*" >&2
+	ERRORS=1
+}
+
+BAD_ENCODING_FILES=""
+
+scan_bad_encodings() {
+	for i in `find -name "Makefile" -or -name "*.mk" -or -name "*.js" -or -name "*.xml" -or -name "*.jsp" -or -name "*.java" -or -name "README" -or -name "*.txt" -or -name "control.in"` ; do
+		cp $i $TEMPFILE
+		dos2unix $TEMPFILE
+		if ! diff $i $TEMPFILE >/dev/null; then
+			bad "Bad file encoding: $i"
+		fi
+	done
+}
+
+find_bad_jar_files() {
+	find src -name "commons-httpclient-*.jar"	\
+	     -or -name "slf4j-api-*.jar"		\
+	     -or -name "slf4j-log4j-*.jar"		\
+	     -or -name "ant-*-ziputil-patched.jar"	\
+	     -or -name "ant-contrib-*.jar"		\
+	     -or -name "ant-tar-patched.jar"		\
+	     -or -name "apache-jsieve-*.jar"		\
+	     -or -name "apache-log4j-extras-*.jar"	\
+	     -or -name "bcprov-jdk15-*.jar"		\
+	     -or -name "catalina-ant.jar"		\
+	     -or -name "commons-cli-*.jar"		\
+	     -or -name "commons-codec-*.jar"		\
+	     -or -name "commons-dbcp-*.jar"		\
+	     -or -name "commons-fileupload-*.jar"	\
+	     -or -name "commons-httpclient-*.jar"	\
+	     -or -name "commons-io-*.jar"		\
+	     -or -name "commons-logging.jar"		\
+	     -or -name "commons-pool-*.jar"		\
+	     -or -name "core-renderer.jar"		\
+	     -or -name "derby.jar"			\
+	     -or -name "dom4j-*.jar"			\
+	     -or -name "ehcache-core-*.jar"		\
+	     -or -name "ews.jar"			\
+	     -or -name "ganymed-ssh2-*.jar"		\
+	     -or -name "gifencoder.jar"			\
+	     -or -name "guava-*.jar"			\
+	     -or -name "ical4j-*-patched.jar"		\
+	     -or -name "icu4j-*.jar"			\
+	     -or -name "iText.jar"			\
+	     -or -name "jaxen-*.jar"			\
+	     -or -name "jcommon-*.jar"			\
+	     -or -name "jdom.jar"			\
+	     -or -name "jetty-*.jar"			\
+	     -or -name "jetty-rewrite-handler-*.jar"	\
+	     -or -name "jetty-util-*.jar"		\
+	     -or -name "jfreechart-*.jar"		\
+	     -or -name "json.jar"			\
+	     -or -name "jtidy-*.jar"			\
+	     -or -name "jython-*.jar"			\
+	     -or -name "jzlib.jar"			\
+	     -or -name "libidn-*.jar"			\
+	     -or -name "log4j-*.jar"			\
+	     -or -name "lucene-analyzers-*.jar"		\
+	     -or -name "lucene-core-*.jar"		\
+	     -or -name "lucene-smartcn-*.jar"		\
+	     -or -name "mail.jar"			\
+	     -or -name "memcached-*.jar"		\
+	     -or -name "mina-core-*.jar"		\
+	     -or -name "mina-filter-ssl-*.jar"		\
+	     -or -name "mysql-connector-java-*.jar"	\
+	     -or -name "nekohtml.jar"			\
+	     -or -name "servlet-api.jar"		\
+	     -or -name "slf4j-api-*.jar"		\
+	     -or -name "slf4j-log4j*.jar"		\
+	     -or -name "sqlite-jdbc-*.jar"		\
+	     -or -name "tnef-*.jar"			\
+	     -or -name "whack.jar"			\
+	     -or -name "xercesImpl-*.jar"		\
+	     -or -name "xpp3.jar"			\
+	     -or -name "yuicompressor-*.jar"		\
+	     -or -name "zimbra-charset.jar"		\
+	     -or -name "zimbracommon.jar"		\
+	     -or -name "zimbraim.jar"			\
+	     -or -name "zimbra-native.jar"		\
+	     -or -name "zimbrasoap.jar"			\
+	     -or -name "zimbrastore.jar"		\
+	     -or -name "zmzimbratozimbramig.jar"
+}
+
+scan_bad_jar_files() {
+	BAD_FILES=`find_bad_jar_files`
+	if [ "$BAD_FILES" ]; then
+		for i in $BAD_FILES ; do
+			bad "Forbidden jar file: $i"
+		done
+	fi
+}
+
+scan_forbidden_calls() {
+	for i in `find -name "*.java" -or -name "*.jsp"` ; do
+		if grep "printStackTrace" "$i" >/dev/null ; then
+			bad "forbidden call: printStackTrace() in $i"
+		fi
+	done
+}
+
+scan_bad_formatting() {
+	for i in `find -name "*.java"` ; do
+		astyle --style=java --indent=tab --suffix=none --indent-switches < $i > $TEMPFILE 2>&1 | grep -ve "^unchanged"
+		if ! diff "$i" "$TEMPFILE" >/dev/null; then
+			bad "Bad file formatting: $i"
+		fi
+	done
+}
+
+[ -f "Makefile" ]   || bad "missing toplevel makefile"
+[ -f "conf.mk" ]    || bad "missing conf.mk"
+[ -f "control.in" ] || bad "missing control.in"
+
+scan_bad_encodings
+scan_bad_jar_files
+scan_forbidden_calls
+scan_bad_formatting
+
+rm -f $TEMPFILE
+
+if [ "$ERRORS" ]; then
+	exit 1
+fi

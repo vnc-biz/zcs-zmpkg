@@ -27,7 +27,20 @@ endif
 
 all:	build
 
-build:  jsp $(ZIMLET_ZIP)
+build:  check jsp $(ZIMLET_ZIP)
+
+check:
+	@if [ -d lib ]; then 							\
+		RESULT=`find lib -name "*.jar" -type f` ;			\
+		if [ "$$RESULT" ]; then						\
+			echo ""	;						\
+			echo "Forbidden binary jar files in zimlet:" ;		\
+			echo "$$RESULT" ;					\
+			echo ""	;						\
+			exit 99 ;						\
+		fi ;								\
+	fi
+	@( cd $(TOPDIR) ; $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree )
 
 clean:
 	@rm -Rf $(ZIMLET_ZIP) tmp _jspc_tmp

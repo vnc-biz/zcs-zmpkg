@@ -16,8 +16,10 @@ policy-dos2unix:
 	    -exec "dos2unix" "{}" ";"
 
 policy-java:
-	@find -name "*.java" \
-	    | xargs astyle --style=java --indent=tab --suffix=none --indent-switches 2>&1 | grep -ve "^unchanged" || true
+	@for i in `find -name "*.java"` ; do \
+		astyle --style=java --indent=tab --suffix=none --indent-switches < "$$i" > "$$i.tmp" 2>&1 | grep -ve "^unchanged" ; \
+		mv "$$i.tmp" "$$i" ; \
+	done
 
 policy-xml:
 	@find -name "*.xml" | ( \
