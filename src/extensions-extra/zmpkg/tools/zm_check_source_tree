@@ -10,7 +10,7 @@ bad() {
 BAD_ENCODING_FILES=""
 
 scan_bad_encodings() {
-	for i in `find -name "Makefile" -or -name "*.mk" -or -name "*.js" -or -name "*.xml" -or -name "*.jsp" -or -name "*.java" -or -name "README" -or -name "*.txt" -or -name "control.in"` ; do
+	for i in `find -name "Makefile" -or -name "*.mk" -or -name "*.js" -or -name "*.xml" -or -name "*.jsp" -or -name "*.java" -or -name "README" -or -name "*.txt" -or -name "control.in" -or -name "*.template"` ; do
 		cp $i $TEMPFILE
 		dos2unix $TEMPFILE
 		if ! diff $i $TEMPFILE >/dev/null; then
@@ -37,6 +37,7 @@ find_bad_jar_files() {
 	     -or -name "commons-httpclient-*.jar"	\
 	     -or -name "commons-io-*.jar"		\
 	     -or -name "commons-logging.jar"		\
+	     -or -name "commons-logging-*.jar"		\
 	     -or -name "commons-pool-*.jar"		\
 	     -or -name "core-renderer.jar"		\
 	     -or -name "derby.jar"			\
@@ -107,12 +108,19 @@ scan_forbidden_calls() {
 }
 
 scan_bad_formatting() {
-	for i in `find -name "*.java"` ; do
-		astyle --style=java --indent=tab --suffix=none --indent-switches < $i > $TEMPFILE 2>&1 | grep -ve "^unchanged"
-		if ! diff "$i" "$TEMPFILE" >/dev/null; then
-			bad "Bad file formatting: $i"
-		fi
-	done
+	case ",$ZMPKG_BUILD_POLICY," in
+		,relax-formatting,)
+			echo "$0: formatting check skipped"
+		;;
+		*)
+			for i in `find -name "*.java"` ; do
+				astyle --style=java --indent=tab --suffix=none --indent-switches < $i > $TEMPFILE 2>&1 | grep -ve "^unchanged"
+				if ! diff "$i" "$TEMPFILE" >/dev/null; then
+					bad "Bad file formatting: $i"
+				fi
+			done
+		;;
+	esac
 }
 
 [ -f "Makefile" ]   || bad "missing toplevel makefile"

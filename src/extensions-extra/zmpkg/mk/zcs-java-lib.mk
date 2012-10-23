@@ -26,7 +26,7 @@ check-1:
 endif
 
 check-2:
-	@( cd $(TOPDIR) ; $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree )
+	@( cd $(TOPDIR) ; ZMPKG_BUILD_POLICY="$(ZMPKG_BUILD_POLICY)" $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree )
 
 install:	$(JAR_FILE_NAME)
 	@true

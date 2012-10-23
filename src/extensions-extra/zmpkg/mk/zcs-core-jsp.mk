@@ -6,7 +6,7 @@ JSP_CLASSPATH=`echo "$(JSP_BUILD_JARS)" | tr ' ' ':'`
 all:	build
 
 check:
-	@cd $(TOPDIR) && $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree
+	@cd $(TOPDIR) && ZMPKG_BUILD_POLICY="$(ZMPKG_BUILD_POLICY)" $(ZIMBRA_BUILD_ROOT)/extensions-extra/zmpkg/tools/zm_check_source_tree
 
 build:  check jsp
 	@cp -R src/mailboxd $(IMAGE_ROOT)
