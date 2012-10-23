@@ -64,7 +64,7 @@ dpkg_init() {
 
 dpkg_call() {
 	dpkg_init
-	su $ZIMBRA_USER -c "/usr/bin/fakeroot-ng /usr/bin/dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log $*"
+	su $ZIMBRA_USER -c "/usr/bin/fakeroot /usr/bin/dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log $*"
 }
 
 ## only want to run as unprivileged user
@@ -76,7 +76,7 @@ fi
 
 ZIMBRA_HOME="$1"
 
-if ! fakeroot-ng /bin/true ; then
+if ! fakeroot /bin/true ; then
 	err "$0: fakeroot needs to be installed"
 fi
 
