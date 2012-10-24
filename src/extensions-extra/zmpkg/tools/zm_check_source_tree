@@ -102,7 +102,9 @@ scan_bad_jar_files() {
 scan_forbidden_calls() {
 	for i in `find -name "*.java" -or -name "*.jsp"` ; do
 		if grep "printStackTrace" "$i" >/dev/null ; then
-			bad "forbidden call: printStackTrace() in $i"
+			if ! grep "@@OVERRIDE_CHECK_PRINT_STACK_TRACE@@" "$i" >/dev/null ; then
+				bad "forbidden call: printStackTrace() in $i"
+			fi
 		fi
 	done
 }
