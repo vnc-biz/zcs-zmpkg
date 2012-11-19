@@ -20,7 +20,7 @@ fi
 
 for i in $FORBIDDEN_SOURCE_FILES ; do
 	if [ -f src/$i ]; then
-		err "Forbidden 3rdparty source file: src/$i"
+		echo "Forbidden 3rdparty source file: src/$i"
 	fi
 done
 
