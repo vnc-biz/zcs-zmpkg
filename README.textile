@@ -2,8 +2,7 @@ The zmpkg command a command line interface to the VNC-ZCS package management fac
 
 Under the hood, it is an wrapper for running an dpkg instance inside the ZCS user context, completely independent from the operating system's package management. It handles installation and removal of ZCS packages, including dependency checking.
 
-
-_For later versions it is planned to include repository support for automatic downloading and dependency resolutions, as found in apt-get+friends_
+Additionally the zm-apt-get and zm-aptitude commands provide nice frontends, known from Debian, including repository management, automatic downloads, dependency resolution, upgrades, etc.
 
 h1. Package deployment
 
@@ -38,10 +37,16 @@ h1. First time installation / bootstrap
 
 h2. Requirements
 
-* the *dpkg* too must be installed on the target system and available through *$PATH*
+* the *dpkg* and *fakeroot* tools must be installed on the target system and available through *$PATH*
+* for *zm-apt-get* and *zm-aptitude* commands, *apt-get* and *aptitude* must also be available
 * root access to the host machine
 * tarball of zmpkg bootstrap package
 * ZCS must already be installed (at least zimbra user and it's homedir must exist)
+
+Bootstrap tarballs can be downloaded at:
+
+http://packages.vnc.biz/zmpkg/bootstrap/
+
 
 h2. Running the bootstrap
 
@@ -135,8 +140,37 @@ The call:
 zmpkg devel-init /opt/zimbra
 </pre>
 
-will setup these symlinks to an existing ZCS installation in /opt/zimbra.
+will setup these symlinks to an existing ZCS installation in */opt/zimbra*.
 
 h2. Automatic install
 
 Just fetch the source, run make and make install <original-zimbra-prefix>
+
+h2. zm-apt-get and zm-aptitude
+
+The zm-apt-get and zm-aptitude commands provide frontends to the apt-get and aptitude commands for running inside Zimbra context.
+This tools allow the deployment convenience known from Debian distros (eg. package repositories, automatic downloads, dependency resolution, upgrades, etc)
+
+h3. Setup
+
+To make it work, package repositories must be configured in *$HOME/extensions-extra/zmpkg/etc/apt/sources.list*.
+
+For example: Zimbra7 (helix)
+
+<pre>
+http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
+</pre>
+
+With testing repos:
+
+<pre>
+http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
+http://packages.vnc.biz/zmpkg/helix-testing/	main testing experimental
+</pre>
+
+h3. Usage
+
+The zm-apt-get and zm-aptitude commands are just wrappers for usual apt-get and aptitute, to run them in Zimbra context,
+and understand the same parameters.
+
+See apt-get and aptitude manpages for more information.
