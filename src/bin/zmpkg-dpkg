@@ -80,6 +80,15 @@ while [ "$1" ]; do
 			COMMAND="$COMMAND --configure $1$PKGNAME_SUFFIX"
 			shift
 		;;
+		"--version")
+			shift
+			COMMAND="$COMMAND --version"
+			NO_AUTODEPLOY=1
+		;;
+		"--no-autodeploy")
+			NO_AUTODEPLOY=1
+			shift
+		;;
 		*)
 			COMMAND="$COMMAND $1"
 			shift
@@ -93,4 +102,6 @@ fi
 
 fakeroot dpkg --force-architecture --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND
 
-zmpkg-autodeploy
+if [ ! "$NO_AUTODEPLOY" ]; then
+	zmpkg-autodeploy
+fi
