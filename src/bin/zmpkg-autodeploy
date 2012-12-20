@@ -16,6 +16,7 @@ log() {
 
 ZIMBRA_ROOT="$HOME"
 PATH="$ZIMBRA_ROOT/bin:$PATH"
+SKIN_PREFIX=$ZIMBRA_ROOT/mailboxd/webapps/zimbra/skins
 
 file_md5() {
 	md5sum "$1" | sed -e 's~ .*~~'
@@ -107,13 +108,37 @@ scan_skin_archives() {
 }
 
 ## deploy skins from skin archives
-run_deploy_skins() {
+run_deploy_skins_archives() {
 	for archive in `scan_skin_archives` ; do
 		if need_to_deploy "$archive" ; then
 			log "Deploying skin: $archive"
 			$ZIMBRA_ROOT/bin/zmskindeploy "$archive" && mark_deployed "$archive"
 		fi
 	done
+}
+
+find_installed_user_skins() {
+	( [ -d $SKIN_PREFIX ] && cd $SKIN_PREFIX && find * -maxdepth 0 -mindepth 0 -type d -not -name "_base" -not -name "_sample" )
+}
+
+## update the list of installed skins in LDAP
+update_installed_skins() {
+	local i
+	local args
+	for i in `find_installed_user_skins` ; do
+		args="${args} zimbraInstalledSkin $i"
+	done
+	if [ "$args" ]; then
+		log "Fixing current skin list"
+		zmprov mcf $args
+	else
+		err "No skins installed ?"
+	fi
+}
+
+run_deploy_skins() {
+	run_deploy_skins_archives
+	update_installed_skins
 }
 
 ## run the post-install scripts
@@ -136,7 +161,7 @@ run_postinstall() {
 	done
 }
 
-zmpkg_deploy_zimlets() {
+zmpkg_autodeploy() {
 	run_undeploy_zimlets
 	run_undeploy_skins
 	run_deploy_sql
@@ -150,4 +175,4 @@ zmpkg_deploy_zimlets() {
 	return 0
 }
 
-zmpkg_deploy_zimlets "$@"
+zmpkg_autodeploy "$@"
