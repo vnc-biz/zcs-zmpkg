@@ -59,7 +59,7 @@ Unpack the zmpkg-*.tar.gz tarball and run the *install.sh* script as *root* with
 For example:
 
 <pre>
-./install.sh zimbra:zimbra /opt/zimbra
+./install.sh /opt/zimbra
 </pre>
 
 This script will install set up a local package manager instance under the ZCS user and installs the zmpkg command.
