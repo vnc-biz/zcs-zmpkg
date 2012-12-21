@@ -35,6 +35,10 @@ zmpkg list
 
 h1. First time installation / bootstrap
 
+The bootstrap installation has to be done only once, the first time (when no zmpkg had been installed yet).
+It needs to be run as root, as certain permissions have to be fixed to allow running zmpkg entirely in *zimbra* user.
+Subsequent updates can be done via *zmpkg* and *zm-apt-get* command in *zimbra* user context.
+
 h2. Requirements
 
 * the *dpkg* and *fakeroot* tools must be installed on the target system and available through *$PATH*
