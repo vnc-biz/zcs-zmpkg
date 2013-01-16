@@ -12,7 +12,7 @@ BAD_ENCODING_FILES=""
 scan_bad_encodings() {
 	for i in `find -name "Makefile" -or -name "*.mk" -or -name "*.js" -or -name "*.xml" -or -name "*.jsp" -or -name "*.java" -or -name "README" -or -name "*.txt" -or -name "control.in" -or -name "*.template"` ; do
 		cp $i $TEMPFILE
-		dos2unix $TEMPFILE
+		dos2unix -q $TEMPFILE
 		if ! diff $i $TEMPFILE >/dev/null; then
 			bad "Bad file encoding: $i"
 		fi
