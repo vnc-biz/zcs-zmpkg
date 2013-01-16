@@ -134,7 +134,7 @@ update_installed_skins() {
 		log "Fixing current skin list"
 		zmprov mcf $args
 	else
-		err "No skins installed ?"
+		log "No skins installed ?"
 	fi
 }
 
