@@ -25,3 +25,6 @@ troubleshooting:
     b) go the rude way an manually remove the offending directory entries from
        package database entries (in /opt/zimbra/var/lib/dpkg/info/) and then
        re-try the zmpkg call
+
+    * when dpkg complains about mismatching architectures, see README.textile
+      short answer: re-run the bootstrap installation to fix it

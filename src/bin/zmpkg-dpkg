@@ -45,33 +45,11 @@ zmpkg_foreign_arch() {
 	esac
 }
 
-zmpkg_pkgname_suffix() {
-	local version=`dpkg --version | grep "version"`
-	case "$version" in
-	    *1.14*)
-		    return 1
-	    ;;
-	    *1.15.5*)
-		    return 1
-	    ;;
-	    *1.16*)
-		    return 0
-	    ;;
-	    *)
-		    return 0
-	    ;;
-	esac
-}
-
 ## special tweaks for being called from apt-get or aptitude
 ## forcing the architecture suffix on passed package names
 fixup_pkg_name() {
 	local name=`echo "$1" | sed -e 's~:All$~~' | sed -e 's~:All$~~'`
-	if zmpkg_pkgname_suffix ; then
-		echo "$name:All"
-	else
-		echo "$name"
-	fi
+	echo "$name"
 }
 
 COMMAND=""

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+ME="$0"
+
+export LC_ALL="C"
+
+err() {
+	echo "$ME: $*" >&2
+	exit 1
+}
+
+## only want to run as unprivileged user
+[ `whoami` == 'root' ] && err "dont wanna run as root"
+
+ZIMBRA_ROOT="$HOME"
+PATH="$ZIMBRA_ROOT/bin:$PATH:/sbin:/usr/sbin"
+
+if [ ! "$1" == "CONFIRM" ]; then
+	(
+		echo "$ME <CONFIRM>"
+		echo ""
+		echo "Fix dpkg database to the correct architecture"
+		echo ""
+		echo "Old zmpkg versions (Z7 and Z8 pre-alpha releases) use the non-standard architecture \"All\""
+		echo "This tends to cause problems with older dpkg version, required hackish workarounds"
+		echo "With zmpkg-1.3 / Z8 stable repository, the architecture is changed to standard \"all\""
+		echo ""
+		echo "In case of existing installations (pre-1.3 zmpkg), dpkg might refuse upgrades due to"
+		echo "architecture mismatch. This script fixes the database of installed packages"
+	)
+	exit 1
+fi
+
+DPKG_DBDIR=$ZIMBRA_ROOT/var/lib/dpkg
+
+mkdir -p $DPKG_DBDIR || err "permission problem. cannot access package database"
+
+touch	\
+	$DPKG_DBDIR/status	\
+	$DPKG_DBDIR/available	|| err "permission problem. cannot access package database"
+
+(cat $DPKG_DBDIR/status | \
+	sed -e 's~^Architecture: All~Architecture: all~' \
+	> $DPKG_DBDIR/status.tmp && \
+	mv $DPKG_DBDIR/status.tmp $DPKG_DBDIR/status ) || err "Error rewriting $DPKG_DBDIR/status"
+
+(cat $DPKG_DBDIR/available | \
+	sed -e 's~^Architecture: All~Architecture: all~' \
+	> $DPKG_DBDIR/available.tmp && \
+	mv $DPKG_DBDIR/available.tmp $DPKG_DBDIR/available ) || err "Error rewriting $DPKG_DBDIR/available"

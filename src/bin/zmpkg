@@ -33,25 +33,6 @@ dpkg_init() {
 		$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 }
 
-## newer versions of dpkg want ":<arch>" given in package name on non-native archs (eg. "All")
-zmpkg_need_pkgname_filter() {
-	local version=`zmpkg-dpkg --version | grep "version"`
-	case "$version" in
-	    *1.14*)
-		    return 1
-	    ;;
-	    *1.15.5*)
-		    return 1
-	    ;;
-	    *1.16*)
-		    return 0
-	    ;;
-	    *)
-		    return 0
-	    ;;
-	esac
-}
-
 zmpkg_help() {
 	echo "Available commands:"
 	echo "$ME install <deb-file-name>         install a package file"
@@ -72,11 +53,6 @@ zmpkg_help() {
 		echo "  or install it manually into $ZIMBRA_ROOT/bin"
 		echo "========="
 		exit 2
-	fi
-	if zmpkg_need_pkgname_filter ; then
-		echo "Package name suffixing enabled for this dpkg version"
-	else
-		echo "Package name suffixing disabled for thi dpkg version"
 	fi
 	exit 1
 }
@@ -108,17 +84,10 @@ zmpkg_remove() {
 	local l=""
 	local i
 
-	if zmpkg_need_pkgname_filter ; then
-		for i in "$@" ; do
-			i=`echo "$i" | sed -e 's~:All~~'`
-			l="$l $i:All"
-		done
-	else
-		for i in "$@" ; do
-			i=`echo "$i" | sed -e 's~:All~~'`
-			l="$l $i"
-		done
-	fi
+	for i in "$@" ; do
+		i=`echo "$i" | sed -e 's~:All~~'`
+		l="$l $i"
+	done
 
 	zmpkg-dpkg -r $l
 	zmpkg-autodeploy

@@ -54,7 +54,7 @@ ZIMLET_SERVICE_JARDIR=mailboxd/webapps/service/WEB-INF/lib
 ZIMLET_LIB_JARDIR=lib/jars
 
 ## architecture for debian packages
-DPKG_ARCHITECTURE=All
+DPKG_ARCHITECTURE=all
 
 ## debian package file name
 DEBIAN_PACKAGE?=$(PACKAGE)_$(PACKAGING_VERSION)_$(DPKG_ARCHITECTURE).deb

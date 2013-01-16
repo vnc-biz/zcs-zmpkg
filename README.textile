@@ -4,6 +4,8 @@ Under the hood, it is an wrapper for running an dpkg instance inside the ZCS use
 
 Additionally the zm-apt-get and zm-aptitude commands provide nice frontends, known from Debian, including repository management, automatic downloads, dependency resolution, upgrades, etc.
 
+*NOTE:* in case of trouble during upgrade on Z8, see Troubleshooting section
+
 h1. First time installation / bootstrap
 
 The bootstrap installation has to be done only once, the first time (when no zmpkg had been installed yet).
@@ -110,3 +112,11 @@ h2. Automatic install
 
 Just fetch the source, run *make* and *make install <original-zimbra-prefix>*
 This call will install zmpkg and symlinks to the original zimbra libraries into the current user.
+
+h1. Troubleshooting
+
+h2. dpkg complaints about mismatching architectures
+
+With version 1.3 / Z8, package architecture name has changed from "All" to "all", to get rid of problems with certain dpkg versions.
+
+In case of dpkg complains about mismatching architecture (refuses to install "all" because "All" is already installed), re-run the bootstrap installation, which fixes this.

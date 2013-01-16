@@ -61,6 +61,15 @@ dpkg_init() {
 
 	## scan for probably wrong ownerships
 	find $ZIMBRA_HOME/mailboxd/webapps -not -user zimbra -or -not -group zimbra -exec "echo" "WARN: probably wrong ownership:" "{}" ";"
+
+	## fix architectures of already installed packages
+	DPKG_DB=$ZIMBRA_HOME/var/lib/dpkg
+	for i in status available ; do
+		touch $DPKG_DB/$i
+		cat $DPKG_DB/$i | sed -e 's~Architecture: All~Architecture: all~' > $DPKG_DB/$i.tmp
+		mv $DPKG_DB/$i.tmp $DPKG_DB/$i
+		chown $ZIMBRA_USER:$ZIMBRA_GROUP $DPKG_DB/$i
+	done
 }
 
 dpkg_call() {
@@ -85,4 +94,6 @@ if ! dpkg --help >/dev/null ; then
 	err "$0: dpkg needs to be installed"
 fi
 
+dpkg_call -i zcs-zmpkg*.deb
+dpkg_call -i zcs-zmpkg*.deb
 dpkg_call -i zcs-zmpkg*.deb
