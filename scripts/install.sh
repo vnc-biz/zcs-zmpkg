@@ -12,6 +12,7 @@ ZIMBRA_DIRS="
     /var/lib/dpkg/triggers
     /var/lib/dpkg/info
     /var/log/
+    /.aptitude
     /.tmp
     /bin
     /lib/jars
