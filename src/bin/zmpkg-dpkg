@@ -111,7 +111,9 @@ if zmpkg_foreign_arch; then
 	FOREIGN_ARCH="--foreign-architecture All"
 fi
 
-fakeroot dpkg --force-architecture --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND
+if ! fakeroot dpkg --force-architecture --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND ; then
+	exit 1
+fi
 
 if [ "$WANT_AUTODEPLOY" ] && [ ! "$NO_AUTODEPLOY" ]; then
 	zmpkg-autodeploy
