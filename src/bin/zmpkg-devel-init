@@ -46,7 +46,7 @@ zmpkg_devinit() {
 	chmod +x $ZIMBRA_ROOT/bin/zmskindeploy
 
 	## global libdir
-	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1"
+	local dirlist="lib/jars jetty/lib jetty/lib/ext jetty/lib/naming jetty/lib/plus jetty/lib/jsp-2.1 jetty/lib/jsp"
 	for i in $dirlist ; do
 		mkdir -p $ZIMBRA_ROOT/$i || err "failed to create $ZIMBRA_ROOT/$i"
 		(
