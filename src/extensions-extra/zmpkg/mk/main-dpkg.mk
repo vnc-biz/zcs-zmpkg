@@ -10,6 +10,10 @@ $(DEBIAN_PACKAGE)::	$(DEBIAN_DIR)/control $(BUILD_TARGETS)
 
 $(DEBIAN_DIR)/control:	control.in
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
+ifeq ($(ZIMBRA_BASE),)
+	@echo "Missing environment variable ZIMBRA_BASE"
+	exit 1
+endif
 ifeq ($(DEPENDS),)
 	@cat $< | \
 	    sed -e 's~@PACKAGE@~$(PACKAGE)~'		| \
