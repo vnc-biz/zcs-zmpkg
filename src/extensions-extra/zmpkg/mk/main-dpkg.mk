@@ -12,7 +12,13 @@ $(DEBIAN_DIR)/control:	control.in
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
 ifeq ($(ZIMBRA_BASE),)
 	@echo "Missing environment variable ZIMBRA_BASE"
-	exit 1
+	@exit 1
+endif
+ifneq ($(FORCE_ZIMBRA_BASE),)
+ifneq ($(FORCE_ZIMBRA_BASE),$(ZIMBRA_BASE))
+	@echo "Wrong build environment $(ZIMBRA_BASE) (needs $(FORCE_ZIMBRA_BASE))"
+	@exit 1
+endif
 endif
 ifeq ($(DEPENDS),)
 	@cat $< | \
