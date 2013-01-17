@@ -20,7 +20,7 @@ ifeq ($(DEPENDS),)
 	    sed -e 's~@VERSION@~$(PACKAGING_VERSION)~'	| \
 	    sed -e 's~@MAINTAINER@~$(MAINTAINER)~'	| \
 	    sed -e 's~@SECTION@~$(SECTION)~'		| \
-	    sed -e 's~@ARCHITECTURE@~$(ARCHITECTURE)~'	| \
+	    sed -e 's~@ARCHITECTURE@~$(DPKG_ARCHITECTURE)~'	| \
 	    sed -e 's~@PRIORITY@~$(PRIORITY)~'		| \
 	    sed -e 's~@DEPENDS@~$(DEPENDS)~'		| \
 	    sed -e 's~@DESCRIPTION@~$(DESCRIPTION)~'	| \
@@ -31,7 +31,7 @@ else
 	    sed -e 's~@VERSION@~$(PACKAGING_VERSION)~'	| \
 	    sed -e 's~@MAINTAINER@~$(MAINTAINER)~'	| \
 	    sed -e 's~@SECTION@~$(SECTION)~'		| \
-	    sed -e 's~@ARCHITECTURE@~$(ARCHITECTURE)~'	| \
+	    sed -e 's~@ARCHITECTURE@~$(DPKG_ARCHITECTURE)~'	| \
 	    sed -e 's~@PRIORITY@~$(PRIORITY)~'		| \
 	    sed -e 's~@DEPENDS@~$(DEPENDS)~'		| \
 	    sed -e 's~@DESCRIPTION@~$(DESCRIPTION)~' > $@

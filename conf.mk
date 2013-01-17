@@ -2,7 +2,6 @@ VERSION=1.2.8
 PACKAGE=zcs-zmpkg
 MAINTAINER=Enrico Weigelt <enrico.weigelt@vnc.biz>
 SECTION=free/zcs-base
-ARCHITECTURE=All
 PRIORITY=optional
 DESCRIPTION=Zimbra package management system
 REDMINE_UPLOAD_URL?=https://redmine.vnc.biz/redmine/

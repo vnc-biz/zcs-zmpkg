@@ -52,5 +52,8 @@ ZIMLET_LIB_JARDIR?=lib/jars
 ## subdirectory for debian control files
 DEBIAN_DIR?=$(IMAGE_ROOT)/DEBIAN
 
+## architecture for debian packages
+DPKG_ARCHITECTURE=All
+
 ## debian package file name
-DEBIAN_PACKAGE?=$(PACKAGE)_$(PACKAGING_VERSION)_$(ARCHITECTURE).deb
+DEBIAN_PACKAGE?=$(PACKAGE)_$(PACKAGING_VERSION)_$(DPKG_ARCHITECTURE).deb
