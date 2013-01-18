@@ -37,6 +37,23 @@ err() {
 	exit 1
 }
 
+check_fakeroot() {
+	FAKEROOT_VERSION=`fakeroot -v`
+	case "$FAKEROOT_VERSION" in
+		*fakeroot\ version\ *)
+			echo "Fakeroot ok: $FAKEROOT_VERSION"
+		;;
+		*fakeroot-ng\ version\ *)
+			err "Cant work with fakeroot-ng - need plain fakeroot"
+		;;
+		*)
+			err "Cant find fakeroot. Please install fakeroot (NOT fakeroot-ng)"
+		;;
+	esac
+}
+
+check_fakeroot
+
 zmpkg_help() {
 	echo "$ME <zimbra-root>" >&2
 	exit 1
