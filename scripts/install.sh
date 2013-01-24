@@ -61,6 +61,7 @@ zmpkg_help() {
 
 dpkg_init() {
 	for i in $ZIMBRA_DIRS ; do
+		echo "processing: $i"
 		mkdir -p $ZIMBRA_HOME/$i
 		chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/$i
 	done
@@ -91,7 +92,7 @@ dpkg_init() {
 
 dpkg_call() {
 	dpkg_init
-	su $ZIMBRA_USER -c "/usr/bin/fakeroot /usr/bin/dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log $*"
+	su $ZIMBRA_USER -c "/usr/bin/fakeroot PATH=\"$ZIMBRA_HOME/extensions-extra/zmpkg/tools/:$PATH\" /usr/bin/dpkg --force-architecture --force-not-root --root=$ZIMBRA_HOME --log=$ZIMBRA_HOME/var/log/dpkg.log $*"
 }
 
 ## only want to run as unprivileged user
