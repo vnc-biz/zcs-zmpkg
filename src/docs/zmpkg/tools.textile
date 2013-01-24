@@ -1,0 +1,11 @@
+
+= helper tools =
+
+zmpkg comes with a bunch of little helper tools (some are called internally), which might be interesting for troubleshooting and hacking.
+
+== ~/extensions-extra/zmpkg/tools/update-rc.d ==
+
+Just a dummy to make dpkg happy on non-Debian systems (eg. SuSE, CentOS, etc).
+It's required because dpkg always wants to call that command after package installation.
+We trick dpkg to call our own one by setting another $PATH.
+
