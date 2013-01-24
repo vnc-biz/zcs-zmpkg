@@ -24,7 +24,7 @@ http://packages.vnc.biz/zmpkg/bootstrap/
 
 h2. Running the bootstrap
 
-Unpack the zmpkg-*.tar.gz tarball and run the *install.sh* script as *root* with the zimbra-user/group as first and it's homedir as second parameter.
+Unpack the zmpkg-*.tar.gz tarball and run the *install.sh* script as *root* and the zimbra homedir as second parameter.
 
 For example:
 
@@ -75,8 +75,11 @@ To make it work, package repositories must be configured in *$HOME/extensions-ex
 For example: Zimbra7 (helix)
 
 <pre>
-http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
+deb http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
 </pre>
+
+Zimbra8 (ironmaiden)
+<pre>deb http://packages.vnc.biz/zmpkg/current/ ironmaiden free restricted commercial</pre>
 
 With testing repos:
 
