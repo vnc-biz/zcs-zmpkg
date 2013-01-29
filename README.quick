@@ -10,8 +10,10 @@ initial deployment:
 
     * make sure dpkg is installed and available in $PATH
     * take the generated tarball in dist/ subdir to the target system and unpack it
-    * run the install.sh script from there, as root
+    * run the install.sh script from there, as root: ./install.sh /opt/zimbra/ (Zimbra root directory)
     * it will also create some directories and fix permissions
+    * to use zm-apt or zm-aptitude, create a sources.list at $zimbraroot/extensions-extra/zmpkg/etc/apt/ 
+      and add repository: deb http://packages.vnc.biz/zmpkg/current $Zimbra-release free commercial restricted
 
 troubleshooting:
 
