@@ -37,6 +37,10 @@ err() {
 	exit 1
 }
 
+warn() {
+	echo "== WARNING: $*" >&2
+}
+
 check_fakeroot() {
 	FAKEROOT_VERSION=`fakeroot -v`
 	case "$FAKEROOT_VERSION" in
@@ -110,6 +114,23 @@ fi
 
 if ! dpkg --help >/dev/null ; then
 	err "$0: dpkg needs to be installed"
+fi
+
+if ! apt-get --help >/dev/null ; then
+	warn "apt-get not installed -> zm-apt-get wont be available"
+	NON_DEBIAN=1
+fi
+
+if ! aptitude --help >/dev/null; then
+	warn "aptitude not installed -> zm-aptitude wont be available"
+	NON_DEBIAN=1
+fi
+
+if [ "$NON_DEBIAN" ]; then
+	warn "Looks like you're not Debian or Ubuntu"
+	warn "Please refer to documentation on how to install on rpm-based distros"
+	warn "(sleeping for 5 seconds ...)"
+	sleep 5
 fi
 
 dpkg_call -i zcs-zmpkg*.deb
