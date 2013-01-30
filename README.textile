@@ -22,6 +22,36 @@ Bootstrap tarballs can be downloaded at:
 
 http://packages.vnc.biz/zmpkg/bootstrap/
 
+h2. Installation tips for non-Debian based Systems
+
+h3. RHEL / CentOS
+
+* fakeroot is part of standard distribution - just use
+  yum -y install fakeroot
+* dpkg is available for installation from EPEL.
+  http://fedoraproject.org/wiki/EPEL
+  EPEL is quite commonly used to install software that is not part of
+  standard RHEL / CentOS repositories, so this seems to be quite good
+  for a  start
+* apt-utils and aptitude are not available yet in EPEL (Work in Progress)
+* all files and depencies have to be installed with zmpkg install $package
+
+h3. SLES 11 SP2
+
+* packages are available via opensuse build service at
+
+  fakeroot <pre>
+  https://build.opensuse.org/package/show?project=devel%3Atools&package=fakeroot
+  https://build.opensuse.org/package/show?project=home%3Ajfehlig&package=fakeroot
+  https://build.opensuse.org/package/show?project=home%3Ajfehlig&package=fakeroot
+  </pre>
+
+  dpkg <pre>
+  https://build.opensuse.org/package/show?project=home%3Aflichtenheld&package=dpkg </pre>
+
+  apt-utils <pre>
+  https://build.opensuse.org/package/show?project=home%3Awerfl&package=apt-debian </pre>
+
 h2. Running the bootstrap
 
 Unpack the zmpkg-*.tar.gz tarball and run the *install.sh* script as *root* and the zimbra homedir as second parameter.
@@ -75,7 +105,7 @@ To make it work, package repositories must be configured in *$HOME/extensions-ex
 For example: Zimbra7 (helix)
 
 <pre>
-deb http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
+deb http://packages.vnc.biz/zmpkg/current/ helix free restricted commercial
 </pre>
 
 Zimbra8 (ironmaiden)
@@ -84,8 +114,8 @@ Zimbra8 (ironmaiden)
 With testing repos:
 
 <pre>
-http://packages.vnc.biz/zmpkg/helix-current/	helix main testing
-http://packages.vnc.biz/zmpkg/helix-testing/	main testing experimental
+http://packages.vnc.biz/zmpkg/testing/	helix free commercial restricted
+http://packages.vnc.biz/zmpkg/testing/	ironmaiden free commercial restricted
 </pre>
 
 h3. Usage
