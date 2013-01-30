@@ -87,6 +87,15 @@ run_deploy_sql() {
 			run_sql $sqlfile && mark_deployed $sqlfile
 		fi
 	done
+
+	## remove stale post-install markers
+	for marker in `find $ZIMBRA_ROOT/zimlets-install -name "mailboxd-db-schema.sql.deployed" 2>/dev/null` ; do
+		local orig=`echo "$marker" | sed -e 's~\.deployed$~~'`
+		if [ ! -f "$orig" ]; then
+			log "Removing old mailbox-db-schema.sql marker: $orig"
+			rm -f "$marker"
+		fi
+	done
 }
 
 ## scan for installed (but probably not yet deployed) zimlet archives
