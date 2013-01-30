@@ -27,3 +27,5 @@ troubleshooting:
     b) go the rude way an manually remove the offending directory entries from
        package database entries (in /opt/zimbra/var/lib/dpkg/info/) and then
        re-try the zmpkg call
+
+    * for using zmpkg on non Debian based OS please look at README.textile
