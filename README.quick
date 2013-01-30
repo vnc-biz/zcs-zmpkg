@@ -30,3 +30,4 @@ troubleshooting:
 
     * when dpkg complains about mismatching architectures, see README.textile
       short answer: re-run the bootstrap installation to fix it
+    * for using zmpkg on non Debian based OS please look at README.textile
