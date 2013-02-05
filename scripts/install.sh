@@ -46,13 +46,17 @@ prepare_redhat() {
 	## install dpkg
 	case `arch` in
 		x86_64)
-			yum install http://dl.fedoraproject.org/pub/epel/6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm
+			yum install \
+				http://dl.fedoraproject.org/pub/epel/6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm			\
+				http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/apt-0.8.16.1-0.8.16.1.x86_64.rpm
 		;;
 		i386)
-			yum install http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
+			yum install \
+				http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
 		;;
 		i686)
-			yump install http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
+			yump install \
+				http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
 		;;
 		*)
 			die "Unsupported host architecture: " `arch`
