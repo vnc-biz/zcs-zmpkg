@@ -30,6 +30,10 @@ build-dist:
 	@( cd build/ironmaiden && make ZIMBRA_BASE=ironmaiden )
 	@cp -R `find build/ironmaiden/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_IRONMAIDEN_DIST)
 
+# SuSE rpm's
+	@mkdir -p $(INSTALLER_DIR)/binpkg/SLES/x86_64
+	@cp binpkg/SLES/x86_64/*.rpm $(INSTALLER_DIR)/binpkg/SLES/x86_64
+
 # installer script
 	@cp scripts/install.sh $(INSTALLER_DIR)
 	@chmod +x scripts/install.sh

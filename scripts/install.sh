@@ -24,6 +24,9 @@ elif [ -f /etc/centos-release ]; then
 elif [ -f /etc/redhat-release ]; then
 	DISTRIB_ID=RedHat
 	DISTRIB_RELEASE=`cat /etc/redhat-release`
+elif [ -f /etc/SuSE-release ]; then
+	DISTRIB_ID=SuSE
+	DISTRIB_RELEASE=`cat /etc/SuSE-release`
 fi
 
 if [ "$DISTRIB_ID" ]; then
@@ -47,7 +50,7 @@ prepare_redhat() {
 	case `arch` in
 		x86_64)
 			yum install \
-				http://dl.fedoraproject.org/pub/epel/6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm			\
+				http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm	\
 				http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/apt-0.8.16.1-0.8.16.1.x86_64.rpm
 		;;
 		i386)
@@ -65,7 +68,19 @@ prepare_redhat() {
 }
 
 prepare_suse() {
-	die "SuSE not supported yet :("
+	for i in \
+		fakeroot-1.18.3-1.1.x86_64.rpm			\
+		dpkg-1.16.8-7.1.x86_64.rpm			\
+		libapt-pkg4_12-0.8.16-7.3.x86_64.rpm		\
+		debhelper-9.20120830-5.1.noarch.rpm		\
+		apt-debian-0.8.16-7.3.x86_64.rpm		\
+		apt-transport-https-0.8.16-7.3.x86_64.rpm	; do
+	    rpm -i binpkg/SLES/x86_64/$i || die "Failed to install: $i"
+	done
+	if [ ! -d /usr/lib/apt ]; then
+		echo "Fixing symlink for apt ..."
+		( cd /usr/lib && ln -sf /usr/lib64/apt )
+	fi
 }
 
 case "$DISTRIB_ID" in
