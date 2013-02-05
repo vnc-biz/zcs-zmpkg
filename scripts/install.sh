@@ -1,6 +1,6 @@
 #!/bin/bash
 
-err() {
+die() {
 	echo "== ERROR: $*" >&2
 	exit 1
 }
@@ -11,10 +11,33 @@ echo
 echo "Welcome to the ZMPKG installer"
 echo
 
+## detect the distro
+echo -n "Checking your distro ... "
+if [ -f /etc/lsb-release ]; then
+	. /etc/lsb-release
+elif [ -f /etc/debian_version ]; then
+	DISTRIB_ID=Debian
+	DISTRIB_RELEASE=`cat /etc/debian_version`
+elif [ -f /etc/centos-release ]; then
+	DISTRIB_ID=CentOS
+	DISTRIB_RELEASE=`cat /etc/centos-release | sed -e 's~CentOS release ~~i; s~^\ *~~; s~\ .*~~;'`
+elif [ -f /etc/redhat-release ]; then
+	DISTRIB_ID=RedHat
+	DISTRIB_RELEASE=`cat /etc/redhat-release`
+fi
+
+if [ "$DISTRIB_ID" ]; then
+	echo "$DISTRIB_ID ($DISTRIB_RELEASE)"
+else
+	echo "UNKNOWN"
+	die "Unable to detect your distro, cannot proceed. You'll need to do manual install :("
+fi
+
 ## check if zimbra is installed
-echo -n "checking for Zimbra installed ..."
+echo -n "checking for Zimbra installed ... "
 if [ ! -e $ZIMBRA_HOME/bin/zmcontrol ]; then
-	err "Cannot find zmcontrol ... is your Zimbra really installed at $ZIMBRA_HOME ?"
+	echo "MISSING"
+	die "Cannot find zmcontrol ... is your Zimbra really installed at $ZIMBRA_HOME ?"
 fi
 echo
 

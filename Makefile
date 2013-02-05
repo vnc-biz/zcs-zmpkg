@@ -20,14 +20,14 @@ build-dist:
 	@rm -Rf build/helix $(ZMPKG_HELIX_DIST)
 	@mkdir -p build/helix $(ZMPKG_HELIX_DIST)
 	@git archive $(ZMPKG_HELIX_REF) --format=tar | ( cd build/helix && tar x)
-	@( cd build/helix && make clean && make )
+	@( cd build/helix && make ZIMBRA_BASE=helix )
 	@cp -R `find build/helix/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_HELIX_DIST)
 
 # IRONMAIDEN
 	@rm -Rf build/ironmaiden $(ZMPKG_IRONMAIDEN_DIST)
 	@mkdir -p build/ironmaiden  $(ZMPKG_IRONMAIDEN_DIST)
 	@git archive $(ZMPKG_IRONMAIDEN_REF) --format=tar | ( cd build/ironmaiden && tar x)
-	@( cd build/ironmaiden && make clean && make )
+	@( cd build/ironmaiden && make ZIMBRA_BASE=ironmaiden )
 	@cp -R `find build/ironmaiden/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_IRONMAIDEN_DIST)
 
 # installer script
