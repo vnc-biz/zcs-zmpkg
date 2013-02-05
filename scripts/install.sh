@@ -33,6 +33,58 @@ else
 	die "Unable to detect your distro, cannot proceed. You'll need to do manual install :("
 fi
 
+## install prerequisites
+prepare_debian() {
+	apt-get update && apt-get install fakeroot aptitude
+}
+
+## FIXME: we need to separate between distro releases --- currently just assuming RHEL6/CENTOS6
+prepare_redhat() {
+	## install fakeroot
+	yum install fakeroot
+
+	## install dpkg
+	case `arch` in
+		x86_64)
+			yum install http://dl.fedoraproject.org/pub/epel/6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm
+		;;
+		i386)
+			yum install http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
+		;;
+		i686)
+			yump install http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm
+		;;
+		*)
+			die "Unsupported host architecture: " `arch`
+		;;
+	esac
+}
+
+prepare_suse() {
+	die "SuSE not supported yet :("
+}
+
+case "$DISTRIB_ID" in
+	Debian)
+		prepare_debian
+	;;
+	Ubuntu)
+		prepare_debian
+	;;
+	CentOS)
+		prepare_redhat
+	;;
+	RedHat)
+		prepare_redhat
+	;;
+	SuSE)
+		prepare_suse
+	;;
+	*)
+		die "Unsupported distro $DISTRIB_ID, cannot proceed. You'll need to do manual install :("
+	;;
+esac
+
 ## check if zimbra is installed
 echo -n "checking for Zimbra installed ... "
 if [ ! -e $ZIMBRA_HOME/bin/zmcontrol ]; then
