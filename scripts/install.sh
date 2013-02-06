@@ -38,6 +38,12 @@ else
 	die "Unable to detect your distro, cannot proceed. You'll need to do manual install :("
 fi
 
+dummy_progs() {
+	if [ ! -f /usr/local/sbin/update-rc.d ]; then
+		ln -sf /bin/true /usr/local/sbin/update-rc.d
+	fi
+}
+
 ## install prerequisites
 prepare_debian() {
 	apt-get update && apt-get install fakeroot aptitude
@@ -65,6 +71,7 @@ prepare_redhat() {
 		;;
 	esac
 	ldconfig
+	dummy_progs
 }
 
 prepare_suse() {
@@ -81,6 +88,7 @@ prepare_suse() {
 		echo "Fixing symlink for apt ..."
 		( cd /usr/lib && ln -sf /usr/lib64/apt )
 	fi
+	dummy_progs
 }
 
 case "$DISTRIB_ID" in
