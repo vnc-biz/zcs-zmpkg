@@ -46,23 +46,25 @@ prepare_debian() {
 ## FIXME: we need to separate between distro releases --- currently just assuming RHEL6/CENTOS6
 prepare_redhat() {
 	## install fakeroot
-	yum install fakeroot
+	yum update -y
+	yum install -y fakeroot
 
 	## install dpkg
 	case `arch` in
 		x86_64)
-			yum install \
+			yum install -y \
 				binpkg/RHEL/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm	\
 				binpkg/RHEL/x86_64/apt-0.8.16.1-0.8.16.1.x86_64.rpm
 		;;
 		i386|i686)
-			yump install \
+			yump install -y \
 				binpkg/RHEL/i686/dpkg-1.15.5.6-6.el6.i686.rpm
 		;;
 		*)
 			die "Unsupported host architecture: " `arch`
 		;;
 	esac
+	ldconfig
 }
 
 prepare_suse() {
