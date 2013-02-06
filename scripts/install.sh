@@ -60,7 +60,7 @@ prepare_redhat() {
 		x86_64)
 			yum install -y \
 				binpkg/RHEL/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm	\
-				binpkg/RHEL/x86_64/apt-0.8.16.1-0.8.16.1.x86_64.rpm
+				binpkg/RHEL/x86_64/apt-0.9.7.7.1-el6.1.x86_64.rpm
 		;;
 		i386|i686)
 			yump install -y \

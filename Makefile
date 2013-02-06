@@ -40,7 +40,7 @@ build-dist:
 # RHEL rpm's
 	@mkdir -p $(RPM_RHEL_64) $(RPM_RHEL_32)
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm"
-	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/apt-0.8.16.1-0.8.16.1.x86_64.rpm"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/apt-0.9.7.7.1-el6.1.x86_64.rpm"
 	@cd $(RPM_RHEL_32) && wget "http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm"
 
 # installer script
