@@ -66,7 +66,7 @@ else
 	eval $(apt-config shell TRUSTEDPARTS Dir::Etc::TrustedParts/d)
 	if [ -d "$TRUSTEDPARTS" ]; then
 		#echo "parts active"
-		for trusted in $(run-parts --list $TRUSTEDPARTS --regex '^.*\.gpg$'); do
+		for trusted in $(find $TRUSTEDPARTS -type f -name "*.gpg"); do
 			#echo "part -> $trusted"
 			GPG="$GPG --keyring $trusted"
 		done
