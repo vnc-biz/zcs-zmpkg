@@ -59,12 +59,12 @@ prepare_redhat() {
 	case `arch` in
 		x86_64)
 			yum install -y \
-				binpkg/RHEL/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm	\
-				binpkg/RHEL/x86_64/apt-0.9.7.7.1-el6.1.x86_64.rpm
+				binpkg/RHEL/x86_64/@RPM_RHEL_64_DPKG@	\
+				binpkg/RHEL/x86_64/@RPM_RHEL_64_APT@
 		;;
 		i386|i686)
 			yump install -y \
-				binpkg/RHEL/i686/dpkg-1.15.5.6-6.el6.i686.rpm
+				binpkg/RHEL/i686/@RPM_RHEL_32_DPKG@
 		;;
 		*)
 			die "Unsupported host architecture: " `arch`

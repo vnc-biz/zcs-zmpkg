@@ -8,8 +8,12 @@ ZMPKG_IRONMAIDEN_REF=refs/tags/zcs-zmpkg-1.3.0.9
 ZMPKG_HELIX_DIST=$(INSTALLER_DIR)/zmpkg/helix
 ZMPKG_IRONMAIDEN_DIST=$(INSTALLER_DIR)/zmpkg/ironmaiden
 
-RPM_RHEL_64=$(INSTALLER_DIR)/binpkg/RHEL/x86_64
 RPM_RHEL_32=$(INSTALLER_DIR)/binpkg/RHEL/i686
+RPM_RHEL_32_DPKG=dpkg-1.15.5.6-6.el6.i686.rpm
+
+RPM_RHEL_64=$(INSTALLER_DIR)/binpkg/RHEL/x86_64
+RPM_RHEL_64_APT=apt-0.9.7.7.1-el6.4.x86_64.rpm
+RPM_RHEL_64_DPKG=dpkg-1.15.5.6-6.el6.x86_64.rpm
 
 ZMPKG_REPO=.git
 
@@ -38,13 +42,14 @@ build-dist:
 	@cp binpkg/SLES/x86_64/*.rpm $(INSTALLER_DIR)/binpkg/SLES/x86_64
 
 # RHEL rpm's
+	@rm -Rf $(RPM_RHEL_64) $(RPM_RHEL_32)
 	@mkdir -p $(RPM_RHEL_64) $(RPM_RHEL_32)
-	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/dpkg-1.15.5.6-6.el6.x86_64.rpm"
-	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/apt-0.9.7.7.1-el6.1.x86_64.rpm"
-	@cd $(RPM_RHEL_32) && wget "http://dl.fedoraproject.org/pub/epel/6/i386/dpkg-1.15.5.6-6.el6.i686.rpm"
+	@cd $(RPM_RHEL_32) && wget "http://dl.fedoraproject.org/pub/epel/6/i386/$(RPM_RHEL_32_DPKG)"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/$(RPM_RHEL_64_DPKG)"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/$(RPM_RHEL_64_APT)"
 
 # installer script
-	@cp scripts/install.sh $(INSTALLER_DIR)
+	@cat scripts/install.sh | sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~' > $(INSTALLER_DIR)/install.sh
 	@chmod +x scripts/install.sh
 
 clean:
