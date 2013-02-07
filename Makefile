@@ -50,7 +50,7 @@ build-dist:
 
 # installer script
 	@cat scripts/install.sh | sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~' > $(INSTALLER_DIR)/install.sh
-	@chmod +x scripts/install.sh
+	@chmod +x $(INSTALLER_DIR)/install.sh
 
 clean:
 	@rm -Rf dist build
