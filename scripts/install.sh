@@ -15,7 +15,10 @@ echo
 
 ## detect the distro
 echo -n "Checking your distro ... "
-if [ -f /etc/lsb-release ]; then
+if [ -f /etc/SuSE-release ]; then
+	DISTRIB_ID=SuSE
+	DISTRIB_RELEASE=`cat /etc/SuSE-release`
+elif [ -f /etc/lsb-release ]; then
 	. /etc/lsb-release
 elif [ -f /etc/debian_version ]; then
 	DISTRIB_ID=Debian
@@ -26,9 +29,6 @@ elif [ -f /etc/centos-release ]; then
 elif [ -f /etc/redhat-release ]; then
 	DISTRIB_ID=RedHat
 	DISTRIB_RELEASE=`cat /etc/redhat-release`
-elif [ -f /etc/SuSE-release ]; then
-	DISTRIB_ID=SuSE
-	DISTRIB_RELEASE=`cat /etc/SuSE-release`
 fi
 
 if [ "$DISTRIB_ID" ]; then
