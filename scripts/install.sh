@@ -46,7 +46,7 @@ dummy_progs() {
 
 ## install prerequisites
 prepare_debian() {
-	apt-get update && apt-get install fakeroot aptitude
+	apt-get update && apt-get install fakeroot aptitude unzip
 }
 
 ## FIXME: we need to separate between distro releases --- currently just assuming RHEL6/CENTOS6
@@ -54,6 +54,7 @@ prepare_redhat() {
 	## install fakeroot
 	yum update -y
 	yum install -y fakeroot
+	yum install -y unzip
 
 	## install dpkg
 	case `arch` in
@@ -75,6 +76,7 @@ prepare_redhat() {
 }
 
 prepare_suse() {
+	zypper install unzip
 	for i in \
 		fakeroot-1.18.3-1.1.x86_64.rpm			\
 		dpkg-1.16.8-7.1.x86_64.rpm			\
