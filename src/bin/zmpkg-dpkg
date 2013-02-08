@@ -27,24 +27,6 @@ touch	\
 	$ZIMBRA_ROOT/var/lib/dpkg/status	\
 	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 
-zmpkg_foreign_arch() {
-	local version=`dpkg --version | grep "version"`
-	case "$version" in
-	    *1.14*)
-		    return 1
-	    ;;
-	    *1.15.5*)
-		    return 1
-	    ;;
-	    *1.16*)
-		    return 0
-	    ;;
-	    *)
-		    return 0
-	    ;;
-	esac
-}
-
 ## special tweaks for being called from apt-get or aptitude
 ## forcing the architecture suffix on passed package names
 fixup_pkg_name() {
@@ -85,13 +67,9 @@ while [ "$1" ]; do
 	esac
 done
 
-if zmpkg_foreign_arch; then
-	FOREIGN_ARCH="--foreign-architecture All"
-fi
-
 export PATH="$ZIMBRA_ROOT/extensions-extra/zmpkg/tools/:$PATH"
 
-if ! ( PATH="$ZIMBRA_ROOT/extensions-extra/zmpkg/tools/:$PATH" fakeroot dpkg --force-architecture --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND ) ; then
+if ! ( PATH="$ZIMBRA_ROOT/extensions-extra/zmpkg/tools/:$PATH" fakeroot dpkg --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND ) ; then
 	exit 1
 fi
 
