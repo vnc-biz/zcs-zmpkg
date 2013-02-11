@@ -49,7 +49,12 @@ build-dist:
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/$(RPM_RHEL_64_APT)"
 
 # installer script
-	@cat scripts/install.sh | sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~' > $(INSTALLER_DIR)/install.sh
+	@cat scripts/install.sh | \
+		sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~'	| \
+		sed -e 's~@RPM_RHEL_64_DPKG@~$(RPM_RHEL_64_DPKG)~'	| \
+		sed -e 's~@RPM_RHEL_32_APT@~$(RPM_RHEL_32_APT)~'	| \
+		sed -e 's~@RPM_RHEL_32_DPKG@~$(RPM_RHEL_32_DPKG)~'	\
+		> $(INSTALLER_DIR)/install.sh
 	@chmod +x $(INSTALLER_DIR)/install.sh
 
 clean:
