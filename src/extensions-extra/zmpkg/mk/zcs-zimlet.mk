@@ -42,6 +42,10 @@ $(ZIMLET_ZIP):	src/*
 	@mkdir -p `dirname "$@"`
 	@rm -Rf tmp
 	@cp -R src tmp
+	@for i in $(ZIMLET_SYMLINK_FILES) ; do \
+	    echo "Symlinking: $$i"; \
+	    ( cd tmp && ln -sf $$i ); \
+	done
 	@for i in $(ZIMLET_PROCESS_FILES) ; do \
 	    echo "processing: $$i"; \
 	    cat src/$$i \
@@ -49,7 +53,7 @@ $(ZIMLET_ZIP):	src/*
 		| sed -e "s~@ZIMLET_VERSION@~$(ZIMLET_VERSION)~g" \
 		> tmp/$$i ; \
 	done
-	@cd tmp; zip -r ../$(ZIMLET_ZIP) *; cd -
+	@cd tmp; zip --symlinks -r ../$(ZIMLET_ZIP) *; cd -
 	@rm -Rf tmp
 	@echo "$(ZIMLET_NAME).zip" >> $(TOPDIR)/zimlets.list
 
