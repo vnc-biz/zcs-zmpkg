@@ -74,7 +74,11 @@ case `basename "$0"` in
 		apt-get -c $APT_CONFIG "$@"
 	;;
 	zm-aptitude)
-		aptitude "$@"
+		if aptitude --help >/dev/null 2>/dev/null; then
+			aptitude "$@"
+		else
+			echo "Error: aptitude not installed."
+		fi
 	;;
 	zm-apt-config)
 		apt-config -c $APT_CONFIG "$@"
