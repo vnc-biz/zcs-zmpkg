@@ -5,10 +5,13 @@ endif
 
 CLEAN_TARGETS+=clean_dpkg
 
-$(DEBIAN_PACKAGE)::	$(DEBIAN_DIR)/control $(BUILD_TARGETS)
+BUILDINFO=$(IMAGE_ROOT)/extensions-extra/packages/$(PACKAGE)/buildinfo
+CURRENT_COMMIT:=`git show-ref HEAD | sed -e 's~ .*~~'`
+
+$(DEBIAN_PACKAGE)::	$(DEBIAN_DIR)/control $(BUILD_TARGETS) $(BUILDINFO)
 	@dpkg --build $(IMAGE_ROOT) .
 
-$(DEBIAN_DIR)/control:	control.in
+$(DEBIAN_DIR)/control:	control.in $(BUILDINFO)
 	@mkdir -p $(IMAGE_ROOT)/DEBIAN
 ifeq ($(ZIMBRA_BASE),)
 	@echo "Missing environment variable ZIMBRA_BASE"
@@ -44,8 +47,21 @@ else
 endif
 
 clean_dpkg:
-	@rm -Rf $(DEBIAN_FILE) $(DEBIAN_DIR) *.deb
+	@rm -Rf $(DEBIAN_FILE) $(DEBIAN_DIR) *.deb $(BUILDINFO)
+
+$(BUILDINFO):
+	@mkdir -p `dirname "$(BUILDINFO)"`
+	@( \
+		echo -n "Revision: "			; \
+		echo "$(CURRENT_COMMIT)"		; \
+		echo -n "Build-Date: "			; \
+		date					; \
+		echo "Build-User: "`whoami`@`hostname`	; \
+		echo					; \
+		zmpkg list | tail -n +6			; \
+		git diff				; \
+	) > $(BUILDINFO)
 
 dpkg:	$(DEBIAN_PACKAGE)
 
-.PHONY:	$(DEBIAN_DIR)/control dpkg
+.PHONY:	$(DEBIAN_DIR)/control dpkg buildinfo
