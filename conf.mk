@@ -1,4 +1,4 @@
-VERSION=1.2.11
+VERSION=1.2.12
 PACKAGE=zcs-zmpkg
 MAINTAINER=Enrico Weigelt <enrico.weigelt@vnc.biz>
 SECTION=free/zcs-base
