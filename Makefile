@@ -25,16 +25,16 @@ tarball:	build-dist
 build-dist:
 # HELIX
 	@rm -Rf build/helix $(ZMPKG_HELIX_DIST)
-	@mkdir -p build/helix $(ZMPKG_HELIX_DIST)
-	@git archive $(ZMPKG_HELIX_REF) --format=tar | ( cd build/helix && tar x)
-	@( cd build/helix && make ZIMBRA_BASE=helix )
+	@mkdir -p $(ZMPKG_HELIX_DIST)
+	@git clone .git build/helix
+	@( cd build/helix && git checkout $(ZMPKG_HELIX_REF) && make ZIMBRA_BASE=helix )
 	@cp -R `find build/helix/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_HELIX_DIST)
 
 # IRONMAIDEN
 	@rm -Rf build/ironmaiden $(ZMPKG_IRONMAIDEN_DIST)
-	@mkdir -p build/ironmaiden  $(ZMPKG_IRONMAIDEN_DIST)
-	@git archive $(ZMPKG_IRONMAIDEN_REF) --format=tar | ( cd build/ironmaiden && tar x)
-	@( cd build/ironmaiden && make ZIMBRA_BASE=ironmaiden )
+	@mkdir -p $(ZMPKG_IRONMAIDEN_DIST)
+	@git clone .git build/ironmaiden
+	@( cd build/ironmaiden && git checkout $(ZMPKG_IRONMAIDEN_REF) && make ZIMBRA_BASE=ironmaiden )
 	@cp -R `find build/ironmaiden/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_IRONMAIDEN_DIST)
 
 # SuSE rpm's
