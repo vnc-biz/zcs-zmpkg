@@ -30,20 +30,6 @@ touch	\
 	$ZIMBRA_ROOT/var/lib/dpkg/status	\
 	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 
-## permission checks: warn if something seems wrong
-mkdir -p $ZIMBRA_ROOT/lib/ext 2>/dev/null
-if ! touch $ZIMBRA_ROOT/lib/ext/.dpkg_tmp_test ; then
-	(
-		echo "WARNING: directory $ZIMBRA_ROOT/lib/ext not writable to me - some installations might fail !"
-		echo "         to fix this, run the following command as root:"
-		echo ""
-		echo "         find $ZIMBRA_ROOT/lib/ext -type d -exec chown $ZIMBRA_USER:$ZIMBRA_GROUP \"{}\" \";\""
-		echo ""
-	) >&2
-fi
-
-rm -f $ZIMBRA_ROOT/lib/ext/.dpkg_tmp_test 2>/dev/null
-
 
 ## special tweaks for being called from apt-get or aptitude
 ## forcing the architecture suffix on passed package names

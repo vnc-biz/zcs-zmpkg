@@ -93,6 +93,8 @@ zmpkg_remove() {
 	zmpkg-autodeploy
 }
 
+zmpkg-checkperms
+
 case "$1" in
 	install)
 		shift

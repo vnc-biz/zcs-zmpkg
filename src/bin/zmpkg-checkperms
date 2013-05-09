@@ -1,0 +1,65 @@
+#!/bin/bash
+
+ME="$0"
+
+export LC_ALL="C"
+
+err() {
+	echo "$ME: $*" >&2
+	exit 1
+}
+
+## only want to run as unprivileged user
+if [ `whoami` == 'root' ] ; then
+	AM_ROOT=1
+	if [ "$3" == "" ]; then
+		echo "$0 <zimbra-root> <zimbra-user> <zimbra-group>" >&2
+		echo >&2
+		echo "When called as root, automatically fixes permission," >&2
+		echo "otherwise check as the calling unprivileged user" >&2
+		exit 1
+	fi
+	ZIMBRA_ROOT="$1"
+	ZIMBRA_USER="$2"
+	ZIMBRA_GROUP="$3"
+else
+	ZIMBRA_ROOT="$HOME"
+	ZIMBRA_USER=`id -un`
+	ZIMBRA_GROUP=`id -gn`
+fi
+
+ZIMBRA_DIRS="
+	/var/lib/dpkg
+	/var/lib/dpkg/updates
+	/var/lib/dpkg/triggers
+	/var/lib/dpkg/info
+	/lib/ext
+	/lib/jars
+	.tmp
+	.gnupg
+"
+
+for d in $ZIMBRA_DIRS ; do
+	if [ "$AM_ROOT" ]; then
+		## automatically fix
+		mkdir -p $ZIMBRA_ROOT
+		chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_ROOT/$d
+		chmod ug+rwx $ZIMBRA_ROOT/$d
+	else
+		mkdir -p $ZIMBRA_ROOT/$d 2>/dev/null
+		if ! touch $ZIMBRA_ROOT/$d/.dpkg_check.tmp ; then
+			echo "WARNING: broken permissions for $ZIMBRA_ROOT/$d"
+			BROKEN=1
+		fi
+		rm -f $ZIMBRA_ROOT/$d/.dpkg_check.tmp
+	fi
+done
+
+if [ "$BROKEN" ]; then
+	(
+		echo "WARNING: you should run me as root:"
+		echo ""
+		echo "    $ZIMBRA_ROOT/bin/zmpkg-checkperms $ZIMBRA_ROOT $ZIMBRA_USER $ZIMBRA_GROUP"
+		echo ""
+	) >&2
+fi
