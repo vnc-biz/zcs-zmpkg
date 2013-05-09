@@ -143,7 +143,15 @@ case "$ZIMBRA_VERSION" in
 	;;
 esac
 
-mkdir -p $ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt $ZIMBRA_HOME/.gnupg
+CREATE_DIRS="
+	$ZIMBRA_HOME/extensions-extra/zmpkg
+	$ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt
+	$ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt/conf.d
+	$ZIMBRA_HOME/.gnupg
+"
+
+mkdir -p $CREATE_DIRS
+chown -R $ZIMBRA_USER:$ZIMBRA_GROUP $CREATE_DIRS
 
 ## call the actual installers
 
@@ -169,7 +177,10 @@ echo
     echo ""
 ) > $ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt/sources.list
 
-chown -R $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/extensions-extra/zmpkg $ZIMBRA_HOME/.gnupg
+chown -R $ZIMBRA_USER:$ZIMBRA_GROUP $CREATE_DIRS
+
+## fix permissions for extension installation
+find $ZIMBRA_HOME/lib/ext -type d -exec "chown" "$ZIMBRA_USER:$ZIMBRA_GROUP" "{}" ";"
 
 su zimbra -l -c "zm-apt-key add $ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt/zcs-repo-master.key"
 su zimbra -l -c "zm-apt-get update"
