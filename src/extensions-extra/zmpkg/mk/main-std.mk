@@ -13,6 +13,13 @@ clean_src:
 check-depend:
 	@zmpkg check-installed "$(DEPENDS)"
 
+install-depend:
+	@zm-apt-get clean
+	@zm-apt-get autoremove
+	@zm-apt-get update
+	@zm-apt-get upgrade
+	@zm-apt-get install -y -f `echo "$(DEPENDS)" | sed -e 's~,~ ~'g`
+
 build-src:
 	@$(MAKE) -C src
 
