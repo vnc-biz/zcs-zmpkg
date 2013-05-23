@@ -23,8 +23,13 @@ zmpkg_devinit() {
 	local ORIGINAL_ZIMBRA_ROOT="$1"
 
 	if [ `whoami` == "zimbra" ]; then
-		echo "$ME: never run devel-init as the zimbra user - it would destroy your zimbra installation !"
+		echo "$ME: never run devel-init as the zimbra user - it would destroy your zimbra installation !" >&2
 		exit 3
+	fi
+
+	if [ ! "$ZIMBRA_BASE" ]; then
+		echo "$ME: you need to set ZIMBRA_BASE variable to your current zimbra major version (eg. helix)" >&2
+		exit 4
 	fi
 
 	## dummy for zmzimletctl
@@ -86,6 +91,19 @@ zmpkg_devinit() {
 			ln -sf $i
 		done
 	)
+
+	SRCLIST=$ZIMBRA_ROOT/extensions-extra/zmpkg/etc/apt/sources.list
+
+	## add vnc public repo key and configure repos
+	zm-apt-key add $ZIMBRA_ROOT/extensions-extra/zmpkg/etc/apt/zcs-repo-master.key
+
+	echo "## vnc standard repos for $ZIMBRA_BASE" >> $SRCLIST
+	echo "deb http://packages.vnc.biz/zmpkg/current	$ZIMBRA_BASE	free restricted commercial" >> $SRCLIST
+	echo "deb http://packages.vnc.biz/zmpkg/testing	$ZIMBRA_BASE	free restricted commercial" >> $SRCLIST
+	echo "" >> $SRCLIST
+
+	## upgrade to latest base packages
+	$ZIMBRA_ROOT/bin/zm-apt-get update && $ZIMBRA_ROOT/bin/zm-apt-get upgrade -y
 }
 
 zmpkg_devinit "$@"
