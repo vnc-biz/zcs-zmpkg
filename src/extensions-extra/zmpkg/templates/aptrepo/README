@@ -1,0 +1,6 @@
+
+Local testing apt repository, created by devel-init
+
+You'll need apt-ftparchive to regenerate it.
+For signing, you'll have to create a gpg key first.
+

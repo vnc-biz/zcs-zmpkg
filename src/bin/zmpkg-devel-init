@@ -104,6 +104,17 @@ zmpkg_devinit() {
 
 	## upgrade to latest base packages
 	$ZIMBRA_ROOT/bin/zm-apt-get update && $ZIMBRA_ROOT/bin/zm-apt-get upgrade -y
+
+	## create local apt repository
+	local APTREPO=$HOME/zm-apt-repo/devel
+	echo "==> creating a local zm-apt repo at $APTREPO"
+	echo "==> see $APTREPO/README for more information"
+	echo ""
+	mkdir -p $APTREPO/conf
+	cp -R $ZIMBRA_ROOT/extensions-extra/zmpkg/templates/aptrepo/* $APTREPO/
+	( cd $APTREPO && ./update )
+	echo "## local testing repo for $ZIMBRA_BASE" >> $SRCLIST
+	echo "deb file://$APTREPO helix	free restricted commercial" >> $SRCLIST
 }
 
 zmpkg_devinit "$@"
