@@ -1,0 +1,36 @@
+#!/bin/bash
+
+ARCHIVE_DIR=.
+ARCHIVE_CONF=${ARCHIVE_DIR}/conf/apt-ftparchive.conf
+DISTS="helix ironmaiden"
+SECTIONS="free restricted commercial"
+ARCHITECTURES="All all"
+
+find -type f -name "*.deb" -exec "chmod" "u=rw,go=r" "{}" ";"
+
+rm -Rf cache dists
+mkdir -p cache
+
+find -name "Release" -or -name "Release.*"
+
+for d in ${DISTS} ; do
+	DIST_ROOT=${ARCHIVE_DIR}/dists/$d
+	mkdir -p ${DIST_ROOT}
+	for s in ${SECTIONS} ; do
+		mkdir -p pool/dists/$d/$s
+		for a in ${ARCHITECTURES} ; do
+			mkdir -p dists/$d/$s/binary-$a/
+		done
+	done
+done
+
+apt-ftparchive generate ${ARCHIVE_CONF} 2>&1
+
+for d in ${DISTS}; do
+	DIST_ROOT=${ARCHIVE_DIR}/dists/$d
+	apt-ftparchive -c ${ARCHIVE_DIR}/conf/apt-$d-release.conf release ${DIST_ROOT} > ${DIST_ROOT}/Release.tmp
+	mv ${DIST_ROOT}/Release.tmp ${DIST_ROOT}/Release
+	gpg -abs -o ${DIST_ROOT}/Release.gpg ${DIST_ROOT}/Release
+	cat ${DIST_ROOT}/Release.gpg | gzip -9 > ${DIST_ROOT}/Release.gpg.gz
+	cat ${DIST_ROOT}/Release.gpg | bzip2 -9 > ${DIST_ROOT}/Release.gpg.bz2
+done
