@@ -41,24 +41,9 @@ $(INSTALL_SCRIPT):	scripts/install.sh
 include $(TOPDIR)/src/extensions-extra/zmpkg/mk/main-dpkg.mk
 
 upload:	all
-	@if [ ! "$(REDMINE_UPLOAD_USER)" ];     then echo "REDMINE_UPLOAD_USER environment variable must be set"     ; exit 1 ; fi
-	@if [ ! "$(REDMINE_UPLOAD_PASSWORD)" ]; then echo "REDMINE_UPLOAD_PASSWORD environment variable must be set" ; exit 1 ; fi
-	@if [ ! "$(REDMINE_UPLOAD_URL)" ];      then echo "REDMINE_UPLOAD_URL variable must be set"                  ; exit 1 ; fi
-	@if [ ! "$(REDMINE_UPLOAD_PROJECT)" ];  then echo "REDMINE_UPLOAD_PROJECT variable must be set"              ; exit 1 ; fi
-	@./src/bin/zm_redmine_upload		\
-		-f "$(DEBIAN_PACKAGE)"		\
-		-l "$(REDMINE_UPLOAD_URL)"	\
-		-u "$(REDMINE_UPLOAD_USER)"	\
-		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
-		-p "$(REDMINE_UPLOAD_PROJECT)"	\
-		-d `basename "$(DEBIAN_PACKAGE)"`
-	@./src/bin/zm_redmine_upload		\
-		-f "$(DISTFILE)"		\
-		-l "$(REDMINE_UPLOAD_URL)"	\
-		-u "$(REDMINE_UPLOAD_USER)"	\
-		-w "$(REDMINE_UPLOAD_PASSWORD)"	\
-		-p "$(REDMINE_UPLOAD_PROJECT)"	\
-		-d `basename "$(DISTFILE)"`
+	@if [ ! "$(ZMPKG_UPLOAD_COMMAND)" ]; then echo "ZMPKG_UPLOAD_COMMAND environment variable must be set" ; exit 1 ; fi
+	@$(ZMPKG_UPLOAD_COMMAND) $(DEBIAN_PACKAGE)
+	@$(ZMPKG_UPLOAD_COMMAND) $(DISTFILE)
 
 build-scripts:
 
