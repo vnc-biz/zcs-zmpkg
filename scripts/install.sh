@@ -38,6 +38,47 @@ else
 	die "Unable to detect your distro, cannot proceed. You'll need to do manual install :("
 fi
 
+help() {
+	(
+		echo "$0 [--zimbra-root <zimbra_root>] [--zimbra-user <zimbra_user>] [--zimbra-group <zimbra_group>] [--help]"
+		echo ""
+		echo "Zimbra Package Management bootstrap installer"
+		echo ""
+		echo "Optional arguments:"
+		echo "--zimbra-root <zimbra_root>     non-standard zimbra installation directory"
+		echo "--zimbra-user <zimbra_user>     non-standard zimbra user"
+		echo "--zimbra-group <zimbra_group>   non-standard zimbra group"
+		echo ""
+	) >&2
+	exit 666
+}
+
+while [ "$1" ]; do
+	case "$1" in
+		-h|-help|--help)
+			help
+		;;
+		--zimbra-root|-r)
+			shift
+			[ "$1" ] || die "missing zimbra root directory"
+			ZIMBRA_ROOT="$1"
+		;;
+		--zimbra-user|-u)
+			shift
+			[ "$1" ] || die "missing zimbra user"
+			ZIMBRA_USER="$1"
+		;;
+		--zimbra-group|-g)
+			shift
+			[ "$1" ] || die "missing zimbra group"
+			ZIMBRA_GROUP="$1"
+		;;
+		*)
+			die "unsupported option: $1"
+		;;
+	esac
+done
+
 dummy_progs() {
 	if [ ! -f /usr/local/sbin/update-rc.d ]; then
 		ln -sf /bin/true /usr/local/sbin/update-rc.d
