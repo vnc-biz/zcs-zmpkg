@@ -47,8 +47,7 @@ build_classes:
 	@$(JAVAC) $(JAVAC_FLAGS) -d classes -cp "$(IMPORT_CP)" $(SRCS)
 
 $(EXTENSION_JAR):	build_classes $(JAR_FILE_PREPARE_RULE)
-	@mkdir -p `dirname "$@"`
-	@cp src/MANIFEST.MF classes
-	@$(JAR) cvf $(EXTENSION_JAR) -C classes .
+	@mkdir -p `dirname "$@"` classes/META-INF
+	@$(JAR) cvfm $(EXTENSION_JAR) src/MANIFEST.MF -C classes .
 
 .PHONY:	build_classes build check-1 check-2 clean
