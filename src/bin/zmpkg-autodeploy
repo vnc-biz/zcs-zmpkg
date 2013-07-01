@@ -132,24 +132,8 @@ find_installed_user_skins() {
 	( [ -d $SKIN_PREFIX ] && cd $SKIN_PREFIX && find * -maxdepth 0 -mindepth 0 -type d -not -name "_base" -not -name "_sample" )
 }
 
-## update the list of installed skins in LDAP
-update_installed_skins() {
-	local i
-	local args
-	for i in `find_installed_user_skins` ; do
-		args="${args} zimbraInstalledSkin $i"
-	done
-	if [ "$args" ]; then
-		log "Fixing current skin list"
-		zmprov mcf $args
-	else
-		log "No skins installed ?"
-	fi
-}
-
 run_deploy_skins() {
 	run_deploy_skins_archives
-	update_installed_skins
 }
 
 ## run the post-install scripts
