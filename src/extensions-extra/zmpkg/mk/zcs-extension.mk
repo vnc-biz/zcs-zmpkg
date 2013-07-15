@@ -8,6 +8,12 @@ IMPORT_ZCS=$(addprefix $(ZIMBRA_BUILD_ROOT)/lib/jars/,$(ZCS_LIB_JARS))
 IMPORT_CP=`[ -d lib ] && find lib -name "*.jar" -exec "echo" "-n" "{}:" ";" ; find $(IMPORT_ZCS) -exec "echo" "-n" "{}:" ";"`
 endif
 
+ifneq ($(IMPORT_CP),)
+EXT_CLASSPATH=`echo "$(EXT_BUILD_JARS)" | tr ' ' ':'`:$(IMPORT_CP)
+else
+EXT_CLASSPATH=`echo "$(EXT_BUILD_JARS)" | tr ' ' ':'`
+endif
+
 EXTENSION_JAR?=$(IMAGE_ROOT)/lib/ext/$(EXTENSION_NAME)/$(EXTENSION_NAME).jar
 
 SRCS=`find -L src -name "*.java"`
@@ -44,7 +50,7 @@ clean:
 
 build_classes:
 	@mkdir -p classes
-	@$(JAVAC) $(JAVAC_FLAGS) -d classes -cp "$(IMPORT_CP)" $(SRCS)
+	@$(JAVAC) $(JAVAC_FLAGS) -d classes -cp "$(EXT_CLASSPATH)" $(SRCS)
 
 $(EXTENSION_JAR):	build_classes $(JAR_FILE_PREPARE_RULE)
 	@mkdir -p `dirname "$@"` classes/META-INF
