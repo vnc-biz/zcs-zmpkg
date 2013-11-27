@@ -30,6 +30,48 @@ touch	\
 	$ZIMBRA_ROOT/var/lib/dpkg/status	\
 	$ZIMBRA_ROOT/var/lib/dpkg/available	|| err "permission problem. cannot access package database"
 
+DPKG_INFO="$ZIMBRA_ROOT/var/lib/dpkg/info"
+zmpkg_fix_packages() {
+
+	## special workaround for zcs-core-libs migration (#9051)
+	mv "$DPKG_INFO/zcs-core-libs.list" "$DPKG_INFO/zcs-core-libs.list.orig"
+	cat "$DPKG_INFO/zcs-core-libs.list.orig"				| \
+		grep -v "/mailboxd/webapps/zimbra/WEB-INF/lib/zimbrasoap.jar"	| \
+		grep -v "/mailboxd/webapps/zimbra/WEB-INF/lib/zimrastore.jar"	| \
+		grep -v "/mailboxd/webapps/zimbra/WEB-INF/lib/zimbraclient.jar"	| \
+		grep -v "/mailboxd/webapps/zimbra/WEB-INF/lib/zimbrataglib.jar"	| \
+		cat > "$DPKG_INFO/zcs-core-libs.list"
+	rm -f "$DPKG_INFO/zcs-core-libs.list.orig"
+
+	## drop Zimbra directories from all package info
+	for f in $DPKG_INFO/*.list ; do
+		cat $f | \
+			grep -vE "^/.$"						| \
+			grep -vE "^/bin$"					| \
+			grep -vE "^/docs$"					| \
+			grep -vE "^/mailboxd$"					| \
+			grep -vE "^/mailboxd/webapps$"				| \
+			grep -vE "^/mailboxd/webapps/service$"			| \
+			grep -vE "^/mailboxd/webapps/service/WEB-INF$"		| \
+			grep -vE "^/mailboxd/webapps/service/WEB-INF/lib$"	| \
+			grep -vE "^/mailboxd/webapps/zimlet$"			| \
+			grep -vE "^/mailboxd/webapps/zimlet/WEB-INF$"		| \
+			grep -vE "^/mailboxd/webapps/zimlet/WEB-INF/lib$"	| \
+			grep -vE "^/mailboxd/webapps/zimbra$"			| \
+			grep -vE "^/mailboxd/webapps/zimbra/js$"		| \
+			grep -vE "^/mailboxd/webapps/zimbra/WEB-INF$"		| \
+			grep -vE "^/mailboxd/webapps/zimbra/WEB-INF/lib$"	| \
+			grep -vE "^/mailboxd/webapps/zimbraAdmin$"		| \
+			grep -vE "^/mailboxd/webapps/zimbraAdmin/js$"		| \
+			grep -vE "^/mailboxd/webapps/zimbraAdmin/WEB-INF$"	| \
+			grep -vE "^/mailboxd/webapps/zimbraAdmin/WEB-INF/lib$"	| \
+			grep -vE "^/extensions-extra$"				| \
+			grep -vE "^/lib$"					| \
+			grep -vE "^/lib/jars$"					| \
+			grep -vE "^/zimlets-install$"				| \
+			cat > $f.tmp && mv $f.tmp $f
+	done
+}
 
 ## special tweaks for being called from apt-get or aptitude
 ## forcing the architecture suffix on passed package names
@@ -73,9 +115,13 @@ done
 
 export PATH="$ZIMBRA_ROOT/extensions-extra/zmpkg/tools/:$PATH"
 
+zmpkg_fix_packages
+
 if ! ( PATH="$ZIMBRA_ROOT/extensions-extra/zmpkg/tools/:$PATH" fakeroot dpkg --force-not-root $OPT_FORCE_ARCH --root=$ZIMBRA_ROOT --log=$ZIMBRA_ROOT/var/log/dpkg.log $FOREIGN_ARCH $COMMAND ) ; then
 	exit 1
 fi
+
+zmpkg_fix_packages
 
 if [ "$WANT_AUTODEPLOY" ] && [ ! "$NO_AUTODEPLOY" ]; then
 	zmpkg-autodeploy
