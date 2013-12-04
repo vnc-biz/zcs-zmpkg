@@ -14,6 +14,9 @@ RPM_RHEL_32_DPKG=dpkg-1.15.5.6-6.el6.i686.rpm
 RPM_RHEL_64=$(INSTALLER_DIR)/binpkg/RHEL/x86_64
 RPM_RHEL_64_APT=apt-0.9.7.7.1-el6.4.x86_64.rpm
 RPM_RHEL_64_DPKG=dpkg-1.15.5.6-6.el6.x86_64.rpm
+RPM_RHEL5_64_APT=apt-0.7.10-0.7.10.x86_64.rpm
+RPM_RHEL5_64_DPKG=dpkg-1.15.5.6-6.el5.x86_64.rpm
+RPM_RHEL5_64_FAKEROOT=fakeroot-1.9.6-17.x86_64.rpm
 
 ZMPKG_REPO=.git
 
@@ -47,13 +50,19 @@ build-dist:
 	@cd $(RPM_RHEL_32) && wget "http://dl.fedoraproject.org/pub/epel/6/i386/$(RPM_RHEL_32_DPKG)"
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/$(RPM_RHEL_64_DPKG)"
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/rhel6/x86_64/$(RPM_RHEL_64_APT)"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_APT)"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_DPKG)"
+	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_FAKEROOT)"
 
 # installer script
 	@cat scripts/install.sh | \
 		sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~'	| \
 		sed -e 's~@RPM_RHEL_64_DPKG@~$(RPM_RHEL_64_DPKG)~'	| \
 		sed -e 's~@RPM_RHEL_32_APT@~$(RPM_RHEL_32_APT)~'	| \
-		sed -e 's~@RPM_RHEL_32_DPKG@~$(RPM_RHEL_32_DPKG)~'	\
+		sed -e 's~@RPM_RHEL_32_DPKG@~$(RPM_RHEL_32_DPKG)~'	| \
+		sed -e 's~@RPM_RHEL5_64_APT@~$(RPM_RHEL5_64_APT)~'	| \
+		sed -e 's~@RPM_RHEL5_64_DPKG@~$(RPM_RHEL5_64_DPKG)~'	| \
+		sed -e 's~@RPM_RHEL5_64_FAKEROOT@~$(RPM_RHEL5_64_FAKEROOT)~'	\
 		> $(INSTALLER_DIR)/install.sh
 	@chmod +x $(INSTALLER_DIR)/install.sh
 
