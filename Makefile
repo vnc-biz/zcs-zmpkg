@@ -17,6 +17,10 @@ RPM_RHEL_64_DPKG=dpkg-1.15.5.6-6.el6.x86_64.rpm
 RPM_RHEL5_64_APT=apt-0.7.10-0.7.10.x86_64.rpm
 RPM_RHEL5_64_DPKG=dpkg-1.15.5.6-6.el5.x86_64.rpm
 RPM_RHEL5_64_FAKEROOT=fakeroot-1.9.6-17.x86_64.rpm
+RPM_RHEL5_32_APT=apt-0.7.10-0.7.10.i386.rpm
+RPM_RHEL5_32_DPKG=dpkg-1.15.5.6-6.el5.i386.rpm
+RPM_RHEL5_32_FAKEROOT=fakeroot-1.12.4-2.el5.i386.rpm
+RPM_RHEL5_32_FAKEROOT_LIBS=fakeroot-libs-1.12.4-2.el5.i386.rpm
 
 ZMPKG_REPO=.git
 
@@ -53,16 +57,24 @@ build-dist:
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_APT)"
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_DPKG)"
 	@cd $(RPM_RHEL_64) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_64_FAKEROOT)"
+	@cd $(RPM_RHEL_32) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_32_APT)"
+	@cd $(RPM_RHEL_32) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_32_DPKG)"
+	@cd $(RPM_RHEL_32) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_32_FAKEROOT)"
+	@cd $(RPM_RHEL_32) && wget "http://packages.vnc.biz/zmpkg/bootstrap/os-dist/el5/$(RPM_RHEL5_32_FAKEROOT_LIBS)"
 
 # installer script
 	@cat scripts/install.sh | \
 		sed -e 's~@RPM_RHEL_64_APT@~$(RPM_RHEL_64_APT)~'	| \
 		sed -e 's~@RPM_RHEL_64_DPKG@~$(RPM_RHEL_64_DPKG)~'	| \
-		sed -e 's~@RPM_RHEL_32_APT@~$(RPM_RHEL_32_APT)~'	| \
+		sed -e 's~@RPM_RHEL_32_APT@~$(RPM_RHEL_32_APT)~'        | \
 		sed -e 's~@RPM_RHEL_32_DPKG@~$(RPM_RHEL_32_DPKG)~'	| \
 		sed -e 's~@RPM_RHEL5_64_APT@~$(RPM_RHEL5_64_APT)~'	| \
 		sed -e 's~@RPM_RHEL5_64_DPKG@~$(RPM_RHEL5_64_DPKG)~'	| \
-		sed -e 's~@RPM_RHEL5_64_FAKEROOT@~$(RPM_RHEL5_64_FAKEROOT)~'	\
+		sed -e 's~@RPM_RHEL5_64_FAKEROOT@~$(RPM_RHEL5_64_FAKEROOT)~' |\
+		sed -e 's~@RPM_RHEL5_32_APT@~$(RPM_RHEL5_32_APT)~'	| \
+		sed -e 's~@RPM_RHEL5_32_DPKG@~$(RPM_RHEL5_32_DPKG)~'	| \
+		sed -e 's~@RPM_RHEL5_32_FAKEROOT@~$(RPM_RHEL5_32_FAKEROOT)~' | \
+		sed -e 's~@RPM_RHEL5_32_FAKEROOT_LIBS@~$(RPM_RHEL5_32_FAKEROOT_LIBS)~'	\
 		> $(INSTALLER_DIR)/install.sh
 	@chmod +x $(INSTALLER_DIR)/install.sh
 

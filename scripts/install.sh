@@ -101,6 +101,12 @@ prepare_redhat() {
 							 binpkg/RHEL/x86_64/@RPM_RHEL5_64_APT@	 \
 							 binpkg/RHEL/x86_64/@RPM_RHEL5_64_FAKEROOT@	
 			;;
+			i386|i686)
+				yum --nogpgcheck install binpkg/RHEL/i686/@RPM_RHEL5_32_DPKG@ \
+							 binpkg/RHEL/i686/@RPM_RHEL5_32_APT@	 \
+							 binpkg/RHEL/i686/@RPM_RHEL5_32_FAKEROOT@ \
+							 binpkg/RHEL/i686/@RPM_RHEL5_32_FAKEROOT_LIBS@	
+			;;
 			*)
 				die "Unsupported host architecture:" `arch`
 			;;
