@@ -143,3 +143,14 @@ h2. Automatic install
 
 Just fetch the source, run *make* and *make install <original-zimbra-prefix>*
 This call will install zmpkg and symlinks to the original zimbra libraries into the current user.
+
+h2. Proxy setup
+
+If your system is behind a firewall and can only access the web via proxy, you'll need to
+tell zmpkg how to reach it:
+
+<pre>
+export http_proxy=http://myproxy:port/
+</pre>
+
+Probably you'd like to put it into your ~/.profile or ~/.bashrc (of the Zimbra user)
