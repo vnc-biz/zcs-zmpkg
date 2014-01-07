@@ -153,3 +153,14 @@ h2. dpkg complaints about mismatching architectures
 With version 1.3 / Z8, package architecture name has changed from "All" to "all", to get rid of problems with certain dpkg versions.
 
 In case of dpkg complains about mismatching architecture (refuses to install "all" because "All" is already installed), re-run the bootstrap installation, which fixes this.
+
+h2. Proxy setup
+
+If your system is behind a firewall and can only access the web via proxy, you'll need to
+tell zmpkg how to reach it:
+
+<pre>
+export http_proxy=http://myproxy:port/
+</pre>
+
+Probably you'd like to put it into your ~/.profile or ~/.bashrc (of the Zimbra user)
