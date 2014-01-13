@@ -186,6 +186,13 @@ if [ "$NON_DEBIAN" ]; then
 	sleep 5
 fi
 
+## fixup package file permissions
+for list in `find $ZIMBRA_HOME/var/lib/dpkg -name "*.list"` ; do
+	for f in `cat $list` ; do
+		chown $ZIMBRA_USER:$ZIMBRA_GROUP $ZIMBRA_HOME/$f
+	done
+done
+
 dpkg_call -i zcs-zmpkg*.deb
 dpkg_call -i zcs-zmpkg*.deb
 dpkg_call -i zcs-zmpkg*.deb

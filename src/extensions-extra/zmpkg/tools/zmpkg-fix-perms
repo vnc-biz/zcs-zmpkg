@@ -1,0 +1,65 @@
+#!/bin/bash
+##
+## Fix file permissions of files held in zmpkg packages after Zimbra
+## installer/updater messed them up
+##
+## The problem: newer Zimbra installer simply chown's all files in
+## certain directories to root, even those that never belonged to
+## Zimbra itself
+
+if [ "$2" == "" ]; then
+	(
+		echo "$0 <zimbra prefix> <zimbra_user:zimbra_group>"
+		echo ""
+		echo "Fixup zmpkg-installed file permissions in given Zimbra prefix"
+		echo "to given Zimbra user:group after Zimbra installer messed them up"
+	) >&2
+	exit 1
+fi
+
+if [ `whoami` != "root" ]; then
+	echo "$0: i need to be root" 2>&2
+	exit 2
+fi
+
+ZIMBRA_ROOT=$1
+ZIMBRA_USER=$2
+DPKG_DB=$ZIMBRA_ROOT/var/lib/dpkg
+DPKG_DB_DIRS="$DPKG_DB $DPKG_DB/info $DPKG_DB/triggers $DPKG_DB/updates"
+
+init_dpkg_db() {
+	mkdir -p $DPKG_DB $DPKG_DB/info $DPKG_DB/triggers $DPKG_DB/updates
+	touch $DPKG_DB/available $DPKG_DB/status
+	chown -R $ZIMBRA_USER $DPKG_DB
+}
+
+scan_package_db() {
+	find $DPKG_DB/info -name "*.list"
+}
+
+fix_dpkg_ent() {
+	for i in `cat "$1"` ; do
+		case "$i" in
+			"/.")
+			;;
+			"/mailboxd")
+			;;
+			"/lib")
+			;;
+			"/mailboxd/webapps")
+			;;
+			*)
+				chown $ZIMBRA_USER "$ZIMBRA_ROOT/$i"
+			;;
+		esac
+	done
+}
+
+fix_dpkg_db() {
+	for i in `scan_package_db` ; do
+		fix_dpkg_ent "$i"
+	done
+}
+
+init_dpkg_db
+fix_dpkg_db
