@@ -92,7 +92,7 @@ prepare_debian() {
 
 ## FIXME: we need to separate between distro releases --- currently just assuming RHEL6/CENTOS6
 prepare_redhat() {
-	VERSION=`echo $DISTRIB_RELEASE | cut -d" " -f 3`
+	VERSION=`echo $DISTRIB_RELEASE | awk -F "release" '{ print $2 }' | cut -d" " -f 2`
 	if [ $(echo "$VERSION > 5" | bc) -ne 0 ] && [ $(echo "$VERSION < 6" | bc) -ne 0 ] ; then
 		echo "Detected OS version 5.x"	
 		case `arch` in
