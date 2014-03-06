@@ -129,7 +129,7 @@ prepare_redhat() {
 					
 			;;
 			i386|i686)
-				yump install -y \
+				yum install -y \
 					binpkg/RHEL/i686/@RPM_RHEL_32_DPKG@
 			;;
 			*)
