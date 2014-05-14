@@ -77,6 +77,10 @@ build-dist:
 		sed -e 's~@RPM_RHEL5_32_FAKEROOT_LIBS@~$(RPM_RHEL5_32_FAKEROOT_LIBS)~'	\
 		> $(INSTALLER_DIR)/install.sh
 	@chmod +x $(INSTALLER_DIR)/install.sh
+	@cp scripts/fixpermissions.sh $(INSTALLER_DIR)/.
+	@cp scripts/uninstall.sh $(INSTALLER_DIR)/.
+	@chmod +x $(INSTALLER_DIR)/uninstall.sh
+	@chmod +x $(INSTALLER_DIR)/fixpermissions.sh
 
 clean:
 	@rm -Rf dist build
