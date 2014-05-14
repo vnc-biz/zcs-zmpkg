@@ -51,7 +51,7 @@ esac
 
 echo "ZMPKG permission fix script started at $(date)" >> $LOG_FILE
 
-for I in `su zimbra -c "$ZIMBRA_HOME/bin/zmpkg list" | grep -E "^ii" | awk '{print $2}'`; do echo "Reinstalling $I......"; su zimbra -c "$ZIMBRA_HOME/bin/zm-apt-get -y --reinstall install $I" 2>&1 >> $LOG_FILE; done
+for I in `su zimbra -c "$ZIMBRA_HOME/bin/zmpkg list" | grep -E "^ii" | awk '{print $2}'`; do echo "Reinstalling $I......"; su zimbra -c "$ZIMBRA_HOME/bin/zm-apt-get --force-yes -y --reinstall install $I" 2>&1 >> $LOG_FILE; done
 
 for line in `cat $ZIMBRA_HOME/var/lib/dpkg/info/*.list`
 do
