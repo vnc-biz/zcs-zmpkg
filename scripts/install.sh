@@ -23,7 +23,7 @@ elif [ -f /etc/debian_version ]; then
 	DISTRIB_RELEASE=`cat /etc/debian_version`
 elif [ -f /etc/centos-release ]; then
 	DISTRIB_ID=CentOS
-	DISTRIB_RELEASE=`cat /etc/centos-release | sed -e 's~CentOS release ~~i; s~^\ *~~; s~\ .*~~;'`
+	DISTRIB_RELEASE=`cat /etc/centos-release`
 elif [ -f /etc/redhat-release ]; then
 	DISTRIB_ID=RedHat
 	DISTRIB_RELEASE=`cat /etc/redhat-release`
