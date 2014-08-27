@@ -167,8 +167,8 @@ else
 		echo "## NOTE: you should retain formatting (spaces instead of tabs) for further automatic config upgrades to work"
 		echo "deb http://packages.vnc.biz/zmpkg/current $ZIMBRA_DIST free restricted"
 		echo ""
-		echo "## uncomment this if you want to use commercial VNC products
-		echo "## NOTE: these products are free for evaluation-only, but charged on usage
+		echo "## uncomment this if you want to use commercial VNC products"
+		echo "## NOTE: these products are free for evaluation-only, but charged on usage"
 		echo "##       please see http://www.vnc.biz/ for more information"
 		echo "# deb http://packages.vnc.biz/zmpkg/current $ZIMBRA_DIST commercial"
 		echo ""
