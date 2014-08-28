@@ -2,12 +2,13 @@
 INSTALLER_VERSION=1.4.2.8
 INSTALLER_PACKAGE=zmpkg-installer-$(INSTALLER_VERSION)
 INSTALLER_DIR=dist/$(INSTALLER_PACKAGE)
-ZMPKG_HELIX_REF=refs/tags/zcs-zmpkg-1.2.16
+ZMPKG_HELIX_REF=refs/tags/zcs-zmpkg-1.2.17
 ZMPKG_IRONMAIDEN_REF=refs/tags/zcs-zmpkg-1.3.1.7
+ZMPKG_JUDASPRIEST_REF=refs/tags/zcs-zmpkg-1.4
 
 ZMPKG_HELIX_DIST=$(INSTALLER_DIR)/zmpkg/helix
 ZMPKG_IRONMAIDEN_DIST=$(INSTALLER_DIR)/zmpkg/ironmaiden
-
+ZMPKG_JUDASPRIEST_DIST=$(INSTALLER_DIR)/zmpkg/judaspriest
 RPM_RHEL_32=$(INSTALLER_DIR)/binpkg/RHEL/i686
 RPM_RHEL_32_DPKG=dpkg-1.15.5.6-6.el6.i686.rpm
 
@@ -43,6 +44,13 @@ build-dist:
 	@git clone .git build/ironmaiden
 	@( cd build/ironmaiden && git checkout $(ZMPKG_IRONMAIDEN_REF) && make ZIMBRA_BASE=ironmaiden )
 	@cp -R `find build/ironmaiden/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_IRONMAIDEN_DIST)
+
+# JUDASPRIEST
+	@rm -Rf build/judaspriest $(ZMPKG_JUDASPRIEST_DIST)
+	@mkdir -p $(ZMPKG_JUDASPRIEST_DIST)
+	@git clone .git build/judaspriest
+	@( cd build/judaspriest && git checkout $(ZMPKG_JUDASPRIEST_REF) && make ZIMBRA_BASE=judaspriest )
+	@cp -R `find build/judaspriest/dist/ -mindepth 1 -maxdepth 1 -type d` $(ZMPKG_JUDASPRIEST_DIST)
 
 # SuSE rpm's
 	@mkdir -p $(INSTALLER_DIR)/binpkg/SLES/x86_64
@@ -85,4 +93,4 @@ build-dist:
 clean:
 	@rm -Rf dist build
 
-.PHONY: all build-helix build-ironmaiden bundle clean
+.PHONY: all build-helix build-ironmaiden build-judaspriest bundle clean

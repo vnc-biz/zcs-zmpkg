@@ -198,9 +198,13 @@ case "$ZIMBRA_VERSION" in
 		ZIMBRA_DIST=helix
 		echo "Helix (ZCS 7.x)"
 	;;
-	Release\ 8*)
+	Release\ 8.0*)
 		ZIMBRA_DIST=ironmaiden
-		echo "IronMaiden (ZCS 8.x)"
+		echo "IronMaiden (ZCS 8.0.x)"
+	;;
+	Release\ 8.5*)
+		ZIMBRA_DIST=judaspriest
+		echo "JudasPriest (ZCS 8.5.x)"
 	;;
 	*)
 		echo "UNKNOWN"
