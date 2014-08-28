@@ -2,7 +2,7 @@
 
 ARCHIVE_DIR=.
 ARCHIVE_CONF=${ARCHIVE_DIR}/conf/apt-ftparchive.conf
-DISTS="helix ironmaiden"
+DISTS="helix ironmaiden judaspriest"
 SECTIONS="free restricted commercial"
 ARCHITECTURES="All all"
 

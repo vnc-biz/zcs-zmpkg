@@ -140,8 +140,11 @@ case "$ZIMBRA_VERSION_STRING" in
 	Release\ 7*)
 		ZIMBRA_DIST=helix
 	;;
-	Release\ 8*)
+	Release\ 8.0*)
 		ZIMBRA_DIST=ironmaiden
+	;;
+	Release\ 8.5*)
+		ZIMBRA_DIST=judaspriest
 	;;
 	*)
 		warn "Cannot detect zimbra version. (is zmcontrol available ?)"
@@ -153,10 +156,10 @@ SOURCES_LIST=$ZIMBRA_HOME/extensions-extra/zmpkg/etc/apt/sources.list
 
 ## configure
 if [ -f $SOURCES_LIST ]; then
-	if [ "$ZIMBRA_DIST" == "ironmaiden" ]; then
-		if grep " helix " $SOURCES_LIST >/dev/null ; then
-			info "Repo still configured for helix, but we're on ironmaiden ... fixing it"
-			cat $SOURCES_LIST | sed -e 's~ helix ~ ironmaiden ~' > $SOURCES_LIST.tmp
+	if [ "$ZIMBRA_DIST" == "judaspriest" ]; then
+		if grep " ironmaiden " $SOURCES_LIST >/dev/null ; then
+			info "Repo still configured for ironmaiden, but we're on judaspriest ... fixing it"
+			cat $SOURCES_LIST | sed -e 's~ ironmaiden ~ judaspriest ~' > $SOURCES_LIST.tmp
 			mv $SOURCES_LIST.tmp $SOURCES_LIST
 		fi
 	fi

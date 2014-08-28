@@ -113,11 +113,15 @@ deb http://packages.vnc.biz/zmpkg/current/ helix free restricted commercial
 Zimbra8 (ironmaiden)
 <pre>deb http://packages.vnc.biz/zmpkg/current/ ironmaiden free restricted commercial</pre>
 
+Zimbra8.5 (judaspriest)
+<pre>deb http://packages.vnc.biz/zmpkg/current/ judaspriest free restricted commercial</pre>
+
 With testing repos:
 
 <pre>
 http://packages.vnc.biz/zmpkg/testing/	helix free commercial restricted
 http://packages.vnc.biz/zmpkg/testing/	ironmaiden free commercial restricted
+http://packages.vnc.biz/zmpkg/testing/	judaspriest free commercial restricted
 </pre>
 
 h3. Usage
