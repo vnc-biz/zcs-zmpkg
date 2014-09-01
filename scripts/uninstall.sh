@@ -57,7 +57,7 @@ CMD_ZMPKG=$ZIMBRA_HOME/bin/zmpkg
 CMD_ZMPKG_AUTODEPLOY=$ZIMBRA_HOME/bin/zmpkg-autodeploy
 LOG_FILE="/tmp/zmpkg_uninstall.log"
 CMD_RM="rm -r"
-ZMPKG_PATHS="/opt/zimbra/extensions-extra/ /opt/zimbra/.aptitude /opt/zimbra/.tmp /opt/zimbra/packages /opt/zimbra/services /opt/zimbra/bin/zmpkg /opt/zimbra/bin/zm_check_jsp /opt/zimbra/bin/zm-apt-cache /opt/zimbra/bin/zm-apt-config /opt/zimbra/bin/zm-apt-get /opt/zimbra/bin/zm-aptitude /opt/zimbra/bin/zm-apt-key /opt/zimbra/bin/_zmapt_wrapper /opt/zimbra/bin/zmpkg-autodeploy /opt/zimbra/bin/zmpkg-devel-init /opt/zimbra/bin/zmpkg-dpkg /opt/zimbra/var /opt/zimbra/.gnupg"
+ZMPKG_PATHS="$ZIMBRA_HOME/extensions-extra/ $ZIMBRA_HOME/.aptitude $ZIMBRA_HOME/.tmp $ZIMBRA_HOME/packages $ZIMBRA_HOME/services $ZIMBRA_HOME/bin/zmpkg $ZIMBRA_HOME/bin/zm_check_jsp $ZIMBRA_HOME/bin/zm-apt-cache $ZIMBRA_HOME/bin/zm-apt-config $ZIMBRA_HOME/bin/zm-apt-get $ZIMBRA_HOME/bin/zm-aptitude $ZIMBRA_HOME/bin/zm-apt-key $ZIMBRA_HOME/bin/_zmapt_wrapper $ZIMBRA_HOME/bin/zmpkg-autodeploy $ZIMBRA_HOME/bin/zmpkg-devel-init $ZIMBRA_HOME/bin/zmpkg-dpkg $ZIMBRA_HOME/var $ZIMBRA_HOME/.gnupg"
 
 read -p "This will remove all the packages installed and zmpkg itself from your system. Do you want to continue?[Y/n]:" -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
