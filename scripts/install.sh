@@ -5,6 +5,10 @@ die() {
 	exit 1
 }
 
+if [[ $EUID -ne 0 ]]; then
+        die "Oops. Run me with root user."
+fi;
+
 [ "$ZIMBRA_HOME"  ] || ZIMBRA_HOME=/opt/zimbra
 [ "$ZIMBRA_USER"  ] || ZIMBRA_USER=zimbra
 [ "$ZIMBRA_GROUP" ] || ZIMBRA_GROUP=zimbra
