@@ -96,7 +96,7 @@ prepare_debian() {
 
 ## FIXME: we need to separate between distro releases --- currently just assuming RHEL6/CENTOS6
 prepare_redhat() {
-	VERSION=`echo $DISTRIB_RELEASE | awk -F "release" '{ print $2 }' | cut -d" " -f 2`
+	VERSION=`echo $DISTRIB_RELEASE | awk -F "release" '{ print $2 }' | cut -d" " -f 2 | grep -o "^[0-9]\|^[0-9]\.[0-9]"`
 	if [ $(echo "$VERSION > 5" | bc) -ne 0 ] && [ $(echo "$VERSION < 6" | bc) -ne 0 ] ; then
 		echo "Detected OS version 5.x"	
 		case `arch` in
@@ -117,7 +117,7 @@ prepare_redhat() {
 		esac
 		ldconfig
                 dummy_progs
-	else
+	elif [ $(echo "$VERSION >= 6" | bc) -ne 0 ] && [ $(echo "$VERSION < 7" | bc) -ne 0 ] ; then
 		echo "Detected OS version $VERSION"
 		## install fakeroot
 		yum update -y
@@ -135,6 +135,26 @@ prepare_redhat() {
 			i386|i686)
 				yum install -y \
 					binpkg/RHEL/i686/@RPM_RHEL_32_DPKG@
+			;;
+			*)
+				die "Unsupported host architecture: " `arch`
+			;;
+		esac
+		ldconfig
+		dummy_progs
+	else
+		echo "Detected OS version $VERSION"
+		## install fakeroot
+		yum update -y
+		yum install -y unzip
+
+		## install dpkg
+		case `arch` in
+			x86_64)
+				yum install -y \
+					binpkg/RHEL/x86_64/@RPM_RHEL7_64_DPKG@	\
+					binpkg/RHEL/x86_64/@RPM_RHEL7_64_APT@	\
+					binpkg/RHEL/x86_64/@RPM_RHEL5_64_FAKEROOT@	
 			;;
 			*)
 				die "Unsupported host architecture: " `arch`
