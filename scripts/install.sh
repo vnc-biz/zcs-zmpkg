@@ -230,6 +230,10 @@ case "$ZIMBRA_VERSION" in
 		ZIMBRA_DIST=judaspriest
 		echo "JudasPriest (ZCS 8.5.x)"
 	;;
+	Release\ 8.6*)
+		ZIMBRA_DIST=judaspriest
+		echo "JudasPriest (ZCS 8.6.x)"
+	;;
 	*)
 		echo "UNKNOWN"
 		echo "== FATAL: UNSUPPORTED OR MISSING ZIMBRA VERSION ==" >&2
