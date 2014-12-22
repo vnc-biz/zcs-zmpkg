@@ -146,6 +146,9 @@ case "$ZIMBRA_VERSION_STRING" in
 	Release\ 8.5*)
 		ZIMBRA_DIST=judaspriest
 	;;
+	Release\ 8.6*)
+		ZIMBRA_DIST=judaspriest
+	;;
 	*)
 		warn "Cannot detect zimbra version. (is zmcontrol available ?)"
 		warn "You'll need to configure the repo locations manually"
