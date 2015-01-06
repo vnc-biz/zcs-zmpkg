@@ -55,7 +55,7 @@ run_undeploy_zimlets() {
 		local zimlet=`echo "$archive" | sed -e 's~.*/~~; s~.zip$~~'`
 		if [ ! -f "$archive" ]; then
 			log "Undeploying removed zimlet: $zimlet"
-			$ZIMBRA_ROOT/bin/zmzimletctl undeploy "$zimlet" && rm -f $statfile
+			$ZIMBRA_ROOT/bin/zmzimletctl -l undeploy "$zimlet" && rm -f $statfile
 		fi
 	done
 }
@@ -108,7 +108,7 @@ run_deploy_zimlets() {
 	for archive in `scan_zimlet_archives` ; do
 		if need_to_deploy "$archive" ; then
 			log "Deploying zimlet: $archive"
-			$ZIMBRA_ROOT/bin/zmzimletctl deploy "$archive" && mark_deployed "$archive"
+			$ZIMBRA_ROOT/bin/zmzimletctl -l deploy "$archive" && mark_deployed "$archive"
 		fi
 	done
 }
